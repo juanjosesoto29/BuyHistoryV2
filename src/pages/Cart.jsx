@@ -1,65 +1,45 @@
-import { useCart } from '../state/cart.jsx'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
-export default function Cart(){
-  const { items, remove, clear, total } = useCart()
-  const [popup,setPopup]=useState(null) // null | {msg, confirm}
-  const nav = useNavigate()
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-  const goPay = () => {
-    if(items.length === 0){
-      setPopup({msg:'❌ No hay artículos en el carrito'})
-    } else {
-      setPopup({msg:'¿Deseas ir a la página de pago?', confirm:true})
-    }
-  }
+const Cart = () => {
+    // Lógica para manejar el carrito (añadir, quitar, etc.) iría aquí.
+    // Por ahora, mostraremos un carrito estático como ejemplo.
+    const items = [
+        { id: 1, nombre: 'Moneda romana', precio: 45000, cantidad: 1 },
+        { id: 3, nombre: 'Carta histórica', precio: 65000, cantidad: 2 },
+    ];
+    const total = items.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
 
-  return (
-    <section>
-      <h2>Carrito</h2>
-      {items.length === 0 ? <p>Tu carrito está vacío.</p> : (
-        <>
-          <ul style={{listStyle:'none', padding:0, margin:0, display:'grid', gap:'.75rem'}}>
-            {items.map(i => (
-              <li key={i.id} className="card" style={{display:'grid', gridTemplateColumns:'80px 1fr auto', alignItems:'center', gap:'1rem', padding:'.75rem'}}>
-                <img src={i.img} alt={i.name} style={{width:'80px', height:'60px', objectFit:'cover', borderRadius:12}} />
-                <div>
-                  <div style={{fontWeight:600}}>{i.name}</div>
-                  <div>Cantidad: {i.qty}</div>
-                  <div className="price">${(Number(i.price) * i.qty).toLocaleString('es-CL')}</div>
-                </div>
-                <button className="btn secondary" onClick={()=>remove(i.id)}>Quitar</button>
-              </li>
-            ))}
-          </ul>
-          <div style={{display:'flex', justifyContent:'space-between', marginTop:'1rem', alignItems:'center'}}>
-            <strong>Total: {`$${total.toLocaleString('es-CL')}`}</strong>
-            <div style={{display:'flex', gap:'.5rem'}}>
-              <button className="btn secondary" onClick={clear}>Vaciar</button>
-              <button className="btn" onClick={goPay}>Continuar al Pago</button>
+    return (
+        <div>
+            <h1>Carrito de Compras</h1>
+            <table className="table">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {items.map(item => (
+                        <tr key={item.id}>
+                            <td>{item.nombre}</td>
+                            <td>${item.precio.toLocaleString('es-CL')}</td>
+                            <td>{item.cantidad}</td>
+                            <td>${(item.precio * item.cantidad).toLocaleString('es-CL')}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            <h3 className="text-end">Total: ${total.toLocaleString('es-CL')}</h3>
+            <div className="d-flex justify-content-end">
+                <Link to="/checkout" className="btn btn-success">Proceder al Pago</Link>
             </div>
-          </div>
-        </>
-      )}
-
-      {popup && (
-        <div className="popup" role="dialog" aria-modal="true" style={{position:'fixed', inset:0, background:'rgba(0,0,0,.4)', display:'grid', placeItems:'center'}}>
-          <div className="card" style={{padding:'1rem', maxWidth:420}} tabIndex={-1}>
-            <p>{popup.msg}</p>
-            <div style={{display:'flex', gap:'.5rem', justifyContent:'flex-end'}}>
-              {popup.confirm ? (
-                <>
-                  <button className="btn secondary" onClick={()=>setPopup(null)}>No</button>
-                  <button className="btn" onClick={()=>nav('/pago')}>Sí</button>
-                </>
-              ) : (
-                <button className="btn" onClick={()=>setPopup(null)}>Cerrar</button>
-              )}
-            </div>
-          </div>
         </div>
-      )}
-    </section>
-  )
-}
+    );
+};
+
+export default Cart;

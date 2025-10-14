@@ -1,43 +1,59 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+// src/pages/Login.jsx
 
-export default function Login() {
-  const nav = useNavigate()
-  const [email, setEmail] = useState('')
-  const [pass, setPass] = useState('')
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { loginUsuario } from '../database';
 
-  const onSubmit = e => {
-    e.preventDefault()
-    localStorage.setItem('bh_user', JSON.stringify({ email }))
-    nav('/cuenta')
-  }
+const Login = () => {
+    const [correo, setCorreo] = useState('');
+    const [contrasena, setContrasena] = useState('');
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
 
-  return (
-    <section className="formulario-seccion">
-      <h2>Iniciar sesión</h2>
-      <form onSubmit={onSubmit} className="form-login">
-        <div className="campo">
-          <label>Correo electrónico</label>
-          <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-          />
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const usuario = loginUsuario(correo, contrasena);
+        if (usuario) {
+            setError('');
+            alert('¡Inicio de sesión exitoso!');
+            // Redirigir al home o a la cuenta del usuario
+            navigate('/');
+        } else {
+            setError('Correo o contraseña incorrectos.');
+        }
+    };
+
+    return (
+        <div className="container" style={{ maxWidth: '500px' }}>
+            <h1 className="text-center mb-4">Iniciar Sesión</h1>
+            <form onSubmit={handleSubmit}>
+                {error && <div className="alert alert-danger">{error}</div>}
+                <div className="mb-3">
+                    <label htmlFor="email" className="form-label">Correo Electrónico</label>
+                    <input
+                        type="email"
+                        className="form-control"
+                        id="email"
+                        value={correo}
+                        onChange={(e) => setCorreo(e.target.value)}
+                        required
+                    />
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="password" className="form-label">Contraseña</label>
+                    <input
+                        type="password"
+                        className="form-control"
+                        id="password"
+                        value={contrasena}
+                        onChange={(e) => setContrasena(e.target.value)}
+                        required
+                    />
+                </div>
+                <button type="submit" className="btn btn-primary w-100">Ingresar</button>
+            </form>
         </div>
-        <div className="campo">
-          <label>Contraseña</label>
-          <div className="fila">
-            <input
-              type="password"
-              value={pass}
-              onChange={e => setPass(e.target.value)}
-              required
-            />
-            <button type="submit" className="boton">Ingresar</button>
-          </div>
-        </div>
-      </form>
-    </section>
-  )
-}
+    );
+};
+
+export default Login;

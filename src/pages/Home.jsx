@@ -1,19 +1,41 @@
 
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react';
+import { getOfertas } from '../database'; // Importamos la función para obtener ofertas
+import ProductCard from '../components/ProductCard';
 
-export default function Home(){
+const Home = () => {
+  const [productosEnOferta, setProductosEnOferta] = useState([]);
+
+  useEffect(() => {
+    // Cargamos los productos en oferta cuando el componente se monta
+    setProductosEnOferta(getOfertas());
+  }, []);
+
   return (
-    <section>
-      <h2>Tesoros que cuentan historias</h2>
-      <p>
-        En <strong>BUY HISTORY</strong> traemos reliquias y curiosidades del pasado.
-        Cada pieza puede ser parte de tu colección.
-      </p>
-      <div style={{display:'flex', gap:'12px', justifyContent:'center', margin:'12px 0 24px'}}>
-        <Link to="/catalogo" className="boton">Ver catálogo</Link>
-        <Link to="/contacto" className="boton">Escríbenos</Link>
+    <div>
+      {/* Hero Section */}
+      <div className="p-5 mb-4 bg-light rounded-3 text-center">
+        <div className="container-fluid py-5">
+          <h1 className="display-5 fw-bold">Bienvenido a la Tienda Histórica</h1>
+          <p className="fs-4">
+            Descubre artefactos únicos y piezas con historia.
+          </p>
+        </div>
       </div>
-      <h3>Destacados</h3>
-    </section>
-  )
-}
+
+      {/* Sección de Ofertas */}
+      <h2 className="mb-4">Productos en Oferta</h2>
+      <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        {productosEnOferta.length > 0 ? (
+          productosEnOferta.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))
+        ) : (
+          <p>No hay ofertas disponibles en este momento.</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Home;

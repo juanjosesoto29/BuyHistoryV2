@@ -1,0 +1,6 @@
+@import './style.css';
+@import './formulario.css';
+/* Reset mínimo */
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body { margin: 0; }

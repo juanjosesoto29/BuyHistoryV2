@@ -1,0 +1,380 @@
+/* ===== Base ===== */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f0e6; /* tono cálido */
+  color: #3b2f2f;
+  text-align: center;
+}
+main { max-width: 980px; margin: 20px auto; padding: 0 12px; }
+
+/* ===== Header / Título ===== */
+header {
+  background: url("https://www.transparenttextures.com/patterns/aged-paper.png");
+  background-color: #3b2f2f;
+  padding: 40px 20px; /* menos alto */
+}
+.marco {
+  border: 5px solid goldenrod;
+  display: inline-block;
+  padding: 20px 40px;
+  background-color: rgba(59, 47, 47, 0.8);
+}
+.titulo {
+  font-size: 60px;
+  margin: 0;
+  color: goldenrod;
+  text-shadow: 2px 2px 6px black;
+}
+.subtitulo {
+  font-size: 22px;
+  color: #f5f0e6;
+  margin: 10px 0 0;
+}
+
+/* ===== Navegación ===== */
+nav {
+  background-color: #5c4033;
+  padding: 15px;
+  margin-top: 20px; /* <-- separación del título */
+  border-radius: 6px; /* opcional, para que no se vea tan cuadrado */
+}
+
+nav a {
+  color: #f5f0e6;
+  text-decoration: none;
+  margin: 0 15px;
+  font-weight: bold;
+}
+nav a:hover { color: goldenrod; }
+
+/* ===== Secciones ===== */
+section.presentacion {
+  margin: 50px auto;
+  max-width: 650px;
+  font-size: 18px;
+  line-height: 1.8;
+}
+
+/* ===== Galería / Cards ===== */
+.galeria {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start; /* a la izquierda */
+}
+.galeria img {
+  width: 180px;
+  margin: 10px;
+  border: 4px solid goldenrod;
+  border-radius: 10px;
+}
+
+/* Grid y cards reutilizables (para catálogo/destacados) */
+.grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+.card {
+  background: #fff;
+  border: 1px solid #e9e4db;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+}
+.card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 3px solid goldenrod; /* coherente con tema */
+}
+
+/* ===== Botones ===== */
+.btn, .boton {
+  display: inline-block;
+  padding: 10px 14px;
+  background-color: goldenrod;
+  color: #3b2f2f;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: bold;
+  margin: 6px 0;
+}
+.btn:hover, .boton:hover { background-color: #d4af37; }
+
+/* ===== Formularios ===== */
+.form {
+  background: #fff;
+  border: 1px solid #e9e4db;
+  padding: 16px;
+  border-radius: 8px;
+  max-width: 520px;
+  margin: 0 auto;
+  display: grid;
+  gap: 10px;
+}
+.form input, .form textarea {
+  padding: 10px;
+  border-radius: 6px;
+  background: #fff;
+}
+.form textarea { min-height: 120px; }
+
+/* Entradas generales (coherentes con el tema) */
+input, textarea {
+  padding: 8px;
+  margin: 5px 0;
+  width: 80%;
+  border: 2px solid goldenrod;
+  border-radius: 5px;
+}
+
+/* Fila 2 columnas (MM/AA y CVV, por ejemplo) */
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* ===== Caja destacada (lista/avisos simples) ===== */
+.caja {
+  border: 3px solid goldenrod;
+  padding: 15px;
+  margin: 15px auto;
+  max-width: 400px;
+  background: #fff8e1;
+  border-radius: 8px;
+  list-style: none;
+}
+
+/* ===== Footer ===== */
+footer {
+  background-color: #3b2f2f;
+  color: #f5f0e6;
+  padding: 25px;
+  margin-top: 50px;
+  border-top: none;
+}
+footer a { color: goldenrod; text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+
+/* ===== Responsive ===== */
+@media (max-width: 700px) {
+  .row { grid-template-columns: 1fr; }
+  input, textarea { width: 100%; }
+  .galeria { justify-content: center; } /* más bonito en móvil */
+}
+
+/* ===== Enlaces dentro de cards ===== */
+.card a {
+  color: inherit;          /* usa el mismo color que el resto del texto */
+  text-decoration: none;   /* quita el subrayado */
+  display: block;          /* que ocupe todo el ancho de la card */
+}
+.card a:hover {
+  color: goldenrod;        /* cambia el color solo al pasar el mouse */
+  text-decoration: none;   /* sigue sin subrayado */
+}
+
+/* ===== Estilo para precios ===== */
+.card p {
+  color: #000;             /* texto negro para precio */
+  margin: 6px 0;
+}
+
+/* ===== Badge Carrito ===== */
+#badgeCarrito {
+  background: goldenrod;
+  color: #3b2f2f;
+  padding: 2px 6px;
+  border-radius: 50%;
+  font-weight: bold;
+  margin-left: 4px;
+}
+
+/* ===== Carrito: items con botón a la derecha ===== */
+#listaCarrito { 
+  padding-left: 0; 
+}
+#listaCarrito li {
+  display: flex;
+  justify-content: space-between; /* texto a la izquierda, botón a la derecha */
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+  padding: 6px 10px;
+  border-bottom: 1px solid #e9e4db;
+}
+#listaCarrito li .item-text {
+  flex: 1 1 auto;         /* el texto ocupa el espacio disponible */
+  text-align: left;
+  word-break: break-word; /* si es muy largo, salta de línea */
+}
+#listaCarrito li .boton {
+  flex: 0 0 auto;         /* evita que el botón se encoja o salte de línea */
+  margin-left: 10px;
+}
+
+/* Popup */
+/* Fondo del popup */
+.popup {
+  display: none; /* oculto por defecto */
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Caja del popup */
+.popup-contenido {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+/* Botón cerrar */
+.popup .cerrar {
+  margin-top: 10px;
+  padding: 8px 14px;
+  background: #5c4033;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.price {
+  font-weight: bold;
+  color: #000;   /* negro, por si el texto está dentro de un <a> */
+  margin: 6px 0;
+}
+
+/* Boton inicio session */
+#authMount a {
+  font-weight: bold;
+  color: #fff;
+  background: goldenrod;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+#authMount a:hover {
+  background: #d4a017;
+}
+/* ===== Estilos de Login centrado ===== */
+.formulario-seccion {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.form-login {
+  display: inline-block;
+  text-align: left;
+  background-color: var(--fondo, transparent);
+  padding: 20px 40px;
+  border-radius: 8px;
+}
+
+.form-login .campo {
+  margin-bottom: 20px;
+}
+
+.form-login label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #2d2d2d;
+}
+
+.form-login input {
+  width: 400px;
+  max-width: 90vw;
+  padding: 10px;
+  border: 1px solid #b88c28;
+  border-radius: 4px;
+  font-size: 15px;
+}
+
+.form-login .fila {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-login .boton {
+  background-color: #b88c28;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: bold;
+  color: #2d2d2d;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.form-login .boton:hover {
+  background-color: #d4a634;
+}
+/* === Centrado del menú y botón a la derecha === */
+.nav-bar {
+  display: flex;
+  justify-content: space-between;  /* separa menú y botón */
+  align-items: center;
+  padding: 0.3rem 1rem;
+}
+
+.nav-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-center a {
+  font-weight: 600;
+  color: #f5f0e6;
+  text-decoration: none;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+}
+
+.nav-center a:hover {
+  background-color: #b88c28;
+  color: #2d2d2d;
+  transition: background 0.2s;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.nav-right .boton {
+  background-color: #b88c28;
+  color: #2d2d2d;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.nav-right .boton:hover {
+  background-color: #d4a634;
+}

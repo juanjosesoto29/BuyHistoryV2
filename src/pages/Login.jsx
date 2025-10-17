@@ -1,59 +1,44 @@
 // src/pages/Login.jsx
+import { useNavigate, Link } from 'react-router-dom'
+import { useState } from 'react'
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { loginUsuario } from '../database';
+export default function Login() {
+  const nav = useNavigate()
+  const [form, setForm] = useState({ email:'', password:'' })
 
-const Login = () => {
-    const [correo, setCorreo] = useState('');
-    const [contrasena, setContrasena] = useState('');
-    const [error, setError] = useState('');
-    const navigate = useNavigate();
+  const submit = (e) => {
+    e.preventDefault()
+    // Simulación login: persistimos un usuario mínimo
+    const user = { name: form.email.split('@')[0], email: form.email }
+    localStorage.setItem('bh_user', JSON.stringify(user))
+    nav('/cuenta')
+  }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const usuario = loginUsuario(correo, contrasena);
-        if (usuario) {
-            setError('');
-            alert('¡Inicio de sesión exitoso!');
-            // Redirigir al home o a la cuenta del usuario
-            navigate('/');
-        } else {
-            setError('Correo o contraseña incorrectos.');
-        }
-    };
-
-    return (
-        <div className="container" style={{ maxWidth: '500px' }}>
-            <h1 className="text-center mb-4">Iniciar Sesión</h1>
-            <form onSubmit={handleSubmit}>
-                {error && <div className="alert alert-danger">{error}</div>}
-                <div className="mb-3">
-                    <label htmlFor="email" className="form-label">Correo Electrónico</label>
-                    <input
-                        type="email"
-                        className="form-control"
-                        id="email"
-                        value={correo}
-                        onChange={(e) => setCorreo(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="password" className="form-label">Contraseña</label>
-                    <input
-                        type="password"
-                        className="form-control"
-                        id="password"
-                        value={contrasena}
-                        onChange={(e) => setContrasena(e.target.value)}
-                        required
-                    />
-                </div>
-                <button type="submit" className="btn btn-primary w-100">Ingresar</button>
+  return (
+    <div className="row justify-content-center py-4">
+      <div className="col-12 col-md-6 col-lg-4">
+        <div className="card shadow-sm">
+          <div className="card-body">
+            <h3 className="mb-3">Ingresar</h3>
+            <form onSubmit={submit}>
+              <div className="mb-3">
+                <label className="form-label">Email</label>
+                <input type="email" className="form-control" required
+                       value={form.email} onChange={e=>setForm({...form, email: e.target.value})}/>
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Contraseña</label>
+                <input type="password" className="form-control" required
+                       value={form.password} onChange={e=>setForm({...form, password: e.target.value})}/>
+              </div>
+              <button className="btn btn-dark w-100">Entrar</button>
             </form>
+            <p className="mt-3 mb-0 text-center text-muted">
+              ¿No tienes cuenta? <Link to="/registro">Regístrate</Link>
+            </p>
+          </div>
         </div>
-    );
-};
-
-export default Login;
+      </div>
+    </div>
+  )
+}

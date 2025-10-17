@@ -1,45 +1,76 @@
+import { useCart } from '../state/cart.jsx'
+import { Link, useNavigate } from 'react-router-dom'
+import Swal from 'sweetalert2'
+import 'sweetalert2/dist/sweetalert2.min.css'
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+export default function Cart() {
+  const { items, inc, dec, remove, clear, total } = useCart()
+  const nav = useNavigate()
 
-const Cart = () => {
-    // Lógica para manejar el carrito (añadir, quitar, etc.) iría aquí.
-    // Por ahora, mostraremos un carrito estático como ejemplo.
-    const items = [
-        { id: 1, nombre: 'Moneda romana', precio: 45000, cantidad: 1 },
-        { id: 3, nombre: 'Carta histórica', precio: 65000, cantidad: 2 },
-    ];
-    const total = items.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
-
+  if (!items.length) {
     return (
-        <div>
-            <h1>Carrito de Compras</h1>
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Precio</th>
-                        <th>Cantidad</th>
-                        <th>Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {items.map(item => (
-                        <tr key={item.id}>
-                            <td>{item.nombre}</td>
-                            <td>${item.precio.toLocaleString('es-CL')}</td>
-                            <td>{item.cantidad}</td>
-                            <td>${(item.precio * item.cantidad).toLocaleString('es-CL')}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-            <h3 className="text-end">Total: ${total.toLocaleString('es-CL')}</h3>
-            <div className="d-flex justify-content-end">
-                <Link to="/checkout" className="btn btn-success">Proceder al Pago</Link>
-            </div>
-        </div>
-    );
-};
+      <div className="text-center py-5">
+        <h2 className="mb-3">Tu carrito está vacío</h2>
+        <Link to="/catalogo" className="btn btn-dark">Ir al catálogo</Link>
+      </div>
+    )
+  }
 
-export default Cart;
+  return (
+    <div className="py-3">
+      <h2 className="mb-3">Carrito</h2>
+
+      <div className="table-responsive">
+        <table className="table align-middle">
+          <thead><tr><th>Producto</th><th>Precio</th><th>Cant.</th><th>Total</th><th></th></tr></thead>
+          <tbody>
+            {items.map(it => (
+              <tr key={it.id}>
+                <td>{it.name}</td>
+                <td>${it.price.toLocaleString('es-CL')}</td>
+                <td className="d-flex gap-2 align-items-center">
+                  <button className="btn btn-outline-dark btn-sm" onClick={()=>dec(it.id)}>–</button>
+                  <span className="px-2">{it.qty}</span>
+                  <button className="btn btn-outline-dark btn-sm" onClick={()=>inc(it.id)}>+</button>
+                </td>
+                <td>${(it.price*it.qty).toLocaleString('es-CL')}</td>
+                <td>
+                  <button
+                  className="btn btn-link text-danger"
+                  onClick={() => {
+                    remove(it.id)
+                    Swal.fire({
+                      title: 'Producto eliminado',
+                      text: `"${it.name}" fue quitado del carrito.`,
+                      icon: 'warning',
+                      showConfirmButton: false,
+                      timer: 1300,
+                      toast: true,
+                      position: 'bottom-end',
+                      background: '#fff',
+                      color: '#111',
+                      timerProgressBar: true
+                      })
+                  }}
+                  >
+                  Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="d-flex justify-content-between align-items-center">
+        <button className="btn btn-outline-danger" onClick={clear}>Vaciar</button>
+        <div className="fs-5">Total: <strong>${total.toLocaleString('es-CL')}</strong></div>
+      </div>
+
+      <div className="d-flex justify-content-end mt-3">
+        <button className="btn btn-warning me-2" onClick={()=>nav('/checkout')}>Continuar al pago</button>
+        <Link to="/ofertas" className="btn btn-dark">Ver ofertas</Link>
+      </div>
+    </div>
+  )
+}

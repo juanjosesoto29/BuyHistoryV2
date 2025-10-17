@@ -1,27 +1,42 @@
-
+// src/pages/Account.jsx
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
-export default function Account(){
-  const nav = useNavigate()
-  const [user,setUser]=useState(null)
-  useEffect(()=>{
-    try { setUser(JSON.parse(localStorage.getItem('bh_user'))) } catch {}
-  },[])
-  if(!user){
+export default function Account() {
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    try {
+      const u = JSON.parse(localStorage.getItem('bh_user'))
+      setUser(u || null)
+    } catch {
+      setUser(null)
+    }
+  }, [])
+
+  if (!user) {
     return (
-      <section>
-        <h2>Mi cuenta</h2>
-        <p>No has iniciado sesión.</p>
-      </section>
+      <div className="py-5 text-center">
+        <h3>No has iniciado sesión</h3>
+        <p className="text-muted">Ingresa desde el menú “Ingresar”.</p>
+      </div>
     )
   }
+
+  const logout = () => {
+    localStorage.removeItem('bh_user')
+    location.href = '/'
+  }
+
   return (
-    <section>
+    <div className="py-4">
       <h2>Mi cuenta</h2>
-      <p><strong>Nombre:</strong> {user.nombre || '(sin nombre)'}</p>
-      <p><strong>Email:</strong> {user.email}</p>
-      <button className="btn" onClick={()=>{ localStorage.removeItem('bh_user'); nav('/login') }}>Cerrar sesión</button>
-    </section>
+      <div className="card mt-3">
+        <div className="card-body">
+          <p className="mb-1"><strong>Nombre:</strong> {user.name}</p>
+          <p className="mb-3"><strong>Email:</strong> {user.email}</p>
+          <button className="btn btn-outline-danger" onClick={logout}>Cerrar sesión</button>
+        </div>
+      </div>
+    </div>
   )
 }

@@ -1,15 +1,12 @@
+import { Link } from 'react-router-dom'
 
-import React from 'react';
-import { Link } from 'react-router-dom';
-
-const PagoFallido = () => {
-    return (
-        <div className="text-center">
-            <h1 className="text-danger">Error en el Pago</h1>
-            <p>No se pudo procesar tu pago. Por favor, intenta de nuevo.</p>
-            <Link to="/checkout" className="btn btn-warning">Volver a Intentar</Link>
-        </div>
-    );
-};
-
-export default PagoFallido;
+export default function CheckoutError() {
+  return (
+    <div className="text-center py-5">
+      <div className="display-1 text-danger mb-3">✕</div>
+      <h2>No se pudo procesar el pago</h2>
+      <p className="text-muted">Revisa tus datos e inténtalo nuevamente.</p>
+      <Link to="/checkout" className="btn btn-warning mt-3">Volver al checkout</Link>
+    </div>
+  )
+}

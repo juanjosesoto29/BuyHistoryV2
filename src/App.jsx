@@ -1,70 +1,62 @@
+import { Routes, Route } from 'react-router-dom'
+import Protected from './components/Protected.jsx'
+import MainLayout from './layouts/MainLayout.jsx'
+import AdminLayout from './layouts/AdminLayout.jsx'
 
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+// Páginas ya existentes en tu proyecto:
+import Home from './pages/Home.jsx'
+import Catalog from './pages/Catalog.jsx'
+import Cart from './pages/Cart.jsx'
+import Contact from './pages/Contact.jsx'
+import Login from './pages/Login.jsx'
+import Register from './pages/Register.jsx'
+import Account from './pages/Account.jsx'
 
-// Importar Layouts
-import PublicLayout from './layouts/PublicLayout';
-import AdminLayout from './layouts/AdminLayout'; // Importar el nuevo layout
+// Páginas nuevas:
+import Categorias from './pages/Categorias.jsx'
+import Ofertas from './pages/Ofertas.jsx'
+import Checkout from './pages/Checkout.jsx'
+import PagoExitoso from './pages/PagoExitoso.jsx'
+import PagoFallido from './pages/PagoFallido.jsx'
 
-// Importar páginas públicas
-import Home from './pages/Home';
-import Catalog from './pages/Catalog';
-import DetalleProducto from './pages/DetalleProducto';
-import Cart from './pages/Cart';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Account from './pages/Account';
-import Contact from './pages/Contact';
-import Nosotros from './pages/Nosotros';
-import Blog from './pages/Blog';
-import Categorias from './pages/Categorias';
-import Ofertas from './pages/Ofertas';
-import Checkout from './pages/Checkout';
-import PagoExitoso from './pages/PagoExitoso';
-import PagoFallido from './pages/PagoFallido';
+// Admin pages
+import Dashboard from './admin/pages/Dashboard.jsx'
+import Users from './admin/pages/Users.jsx'
+import Ordenes from './admin/pages/Ordenes.jsx'
+import GestionProductos from './admin/pages/GestionProductos.jsx'
+import GestionCategorias from './admin/pages/GestionCategorias.jsx'
+import GestionUsuarios from './admin/pages/GestionUsuarios.jsx'
 
-// Importar páginas del admin
-import Dashboard from './admin/pages/Dashboard';
-import GestionProductos from './admin/pages/GestionProductos';
-import GestionCategorias from './admin/pages/GestionCategorias';
-import GestionUsuarios from './admin/pages/GestionUsuarios';
-import Ordenes from './admin/pages/Ordenes';
-
-function App() {
+export default function App() {
   return (
-    <BrowserRouter>
+    <div className="d-flex flex-column min-vh-100">
       <Routes>
-        {/* Rutas Públicas con Layout */}
-        <Route path="/" element={<PublicLayout />}>
-          <Route index element={<Home />} />
-          <Route path="catalogo" element={<Catalog />} />
-          <Route path="producto/:id" element={<DetalleProducto />} />
-          <Route path="categorias" element={<Categorias />} />
-          <Route path="categorias/:id" element={<Catalog />} />
-          <Route path="ofertas" element={<Ofertas />} />
-          <Route path="nosotros" element={<Nosotros />} />
-          <Route path="blog" element={<Blog />} />
-          <Route path="contacto" element={<Contact />} />
-          <Route path="carrito" element={<Cart />} />
-          <Route path="checkout" element={<Checkout />} />
-          <Route path="pago-exitoso" element={<PagoExitoso />} />
-          <Route path="pago-fallido" element={<PagoFallido />} />
-          <Route path="login" element={<Login />} />
-          <Route path="registro" element={<Register />} />
-          <Route path="cuenta" element={<Account />} />
+        {/* Sitio público con MainLayout */}
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/catalogo" element={<Catalog />} />
+          <Route path="/categorias" element={<Categorias />} />
+          <Route path="/ofertas" element={<Ofertas />} />
+          <Route path="/carrito" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/checkout/exito" element={<PagoExitoso />} />
+          <Route path="/checkout/error" element={<PagoFallido/>} />
+          <Route path="/contacto" element={<Contact />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/registro" element={<Register />} />
+          <Route path="/cuenta" element={<Protected><Account /></Protected>} />
         </Route>
 
-        {/* Rutas del Panel de Administración con Layout */}
-        <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="productos" element={<GestionProductos />} />
-            <Route path="categorias" element={<GestionCategorias />} />
-            <Route path="usuarios" element={<GestionUsuarios />} />
-            <Route path="ordenes" element={<Ordenes />} />
+        {/* Admin con layout propio */}
+        <Route path="/admin" element={<Protected><AdminLayout /></Protected>}>
+          <Route index element={<Dashboard />} />
+          <Route path="users" element={<Users />} />
+          <Route path="orders" element={<Ordenes />} />
+          <Route path="gestion-productos" element={<GestionProductos />} />
+          <Route path="gestion-categorias" element={<GestionCategorias />} />
+          <Route path="gestion-usuarios" element={<GestionUsuarios />} />
         </Route>
       </Routes>
-    </BrowserRouter>
-  );
+    </div>
+  )
 }
-
-export default App;

@@ -1,41 +1,16 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-
-// Formateador para el precio
-const formatPrice = (price) => {
-  return new Intl.NumberFormat('es-CL', {
-    style: 'currency',
-    currency: 'CLP',
-  }).format(price);
-};
-
-const ProductCard = ({ product }) => {
-  const { id, nombre, precio, img, oferta } = product;
-
+export default function ProductCard({ product, onAdd }) {
+  const { name, desc, price, img } = product
   return (
-    <div className="col">
-      <div className="card h-100 shadow-sm">
-        {oferta && (
-          <span className="badge bg-danger position-absolute top-0 start-0 m-2">
-            Oferta
-          </span>
-        )}
-        <img
-          src={img}
-          className="card-img-top"
-          alt={nombre}
-          style={{ height: '200px', objectFit: 'cover' }}
-        />
-        <div className="card-body">
-          <h5 className="card-title">{nombre}</h5>
-          <p className="card-text text-success fw-bold">{formatPrice(precio)}</p>
-          <Link to={`/producto/${id}`} className="btn btn-primary w-100">
-            Ver Detalle
-          </Link>
+    <div className="card h-100 shadow-sm border-0">
+      <img src={img} className="card-img-top" alt={name} />
+      <div className="card-body d-flex flex-column" style={{ background:'#FFF5E6' }}>
+        <h5 className="card-title">{name}</h5>
+        <p className="card-text flex-grow-1">{desc}</p>
+        <div className="d-flex justify-content-between align-items-center">
+          <span className="fw-bold">${Number(price).toLocaleString('es-CL')}</span>
+          <button className="btn btn-dark btn-sm" onClick={() => onAdd(product)}>Agregar</button>
         </div>
       </div>
     </div>
-  );
-};
-
-export default ProductCard;
+  )
+}

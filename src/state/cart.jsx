@@ -1,31 +1,26 @@
-
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+const Ctx = createContext(null)
 
-const CartCtx = createContext(null)
-
-export function CartProvider({ children }){
+export function CartProvider({ children }) {
   const [items, setItems] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('bh_cart')) || [] } catch { return [] }
+    try { return JSON.parse(localStorage.getItem('bh_cart')) ?? [] } catch { return [] }
   })
 
-  useEffect(()=>{
-    localStorage.setItem('bh_cart', JSON.stringify(items))
-  },[items])
+  useEffect(() => { localStorage.setItem('bh_cart', JSON.stringify(items)) }, [items])
 
-  const add = (product) => {
-    setItems(prev => {
-      const f = prev.find(p => p.id === product.id)
-      if (f) return prev.map(p => p.id===product.id? {...product, qty:p.qty+1} : p)
-      return [...prev, { ...product, qty:1 }]
-    })
-  }
-  const remove = id => setItems(prev => prev.filter(p=>p.id!==id))
+  const add = (p) => setItems(prev => {
+    const i = prev.findIndex(x => x.id === p.id)
+    return i >= 0 ? prev.map((x,ix)=> ix===i ? {...x, qty:x.qty+1} : x) : [...prev, {...p, qty:1}]
+  })
+  const inc = (id) => setItems(prev => prev.map(x => x.id===id ? {...x, qty:x.qty+1} : x))
+  const dec = (id) => setItems(prev => prev.flatMap(x => x.id===id ? (x.qty>1 ? [{...x, qty:x.qty-1}] : []) : [x]))
+  const remove = (id) => setItems(prev => prev.filter(x => x.id !== id))
   const clear = () => setItems([])
-  const count = items.reduce((a,b)=>a+b.qty,0)
-  const total = items.reduce((a,b)=>a+b.qty*Number(b.price),0)
 
-  const value = useMemo(()=>({items, add, remove, clear, count, total}),[items])
-  return <CartCtx.Provider value={value}>{children}</CartCtx.Provider>
+  const count = useMemo(() => items.reduce((s, x) => s + x.qty, 0), [items])
+  const total = useMemo(() => items.reduce((s, x) => s + x.price * x.qty, 0), [items])
+
+  const value = { items, add, inc, dec, remove, clear, count, total }
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }
-
-export function useCart(){ return useContext(CartCtx) }
+export const useCart = () => useContext(Ctx)

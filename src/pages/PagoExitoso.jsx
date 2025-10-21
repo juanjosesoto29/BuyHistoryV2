@@ -11,3 +11,5 @@ export default function CheckoutSuccess() {
     </div>
   )
 }
+
+// Nota: Este componente asume que la ruta que lo renderiza pasa el total pagado a través del estado de la ubicación.

@@ -1,4 +1,3 @@
-// src/components/NavBar.jsx
 import { NavLink, Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useCart } from '../state/cart.jsx'

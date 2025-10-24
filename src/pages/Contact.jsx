@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import '../styles/contact.css' // 👈 importa tu CSS personalizado
+import '../styles/contact.css'
 
 export default function Contact() {
   const [form, setForm] = useState({ nombre:'', email:'', mensaje:'' })

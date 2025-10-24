@@ -1,4 +1,3 @@
-// src/pages/Account.jsx
 import { useEffect, useState } from 'react'
 
 export default function Account() {

@@ -1,5 +1,5 @@
 export default function Ordenes() {
-  const orders = [] // stub: aquí luego puedes persistir pedidos reales
+  const orders = [] 
 
   return (
     <div className="card shadow-sm">

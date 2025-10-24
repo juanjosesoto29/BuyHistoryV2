@@ -1,11 +1,11 @@
-// src/state/cart.jsx
+
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const CartContext = createContext(null);
 const STORAGE_KEY = "bh_cart";
 
 export const CartProvider = ({ children }) => {
-  // Estado inicial desde localStorage
+  
   const [items, setItems] = useState(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -15,7 +15,6 @@ export const CartProvider = ({ children }) => {
     }
   });
 
-  // Persistencia
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
@@ -24,23 +23,23 @@ export const CartProvider = ({ children }) => {
     }
   }, [items]);
 
-  // Helpers internos
+  
   const findIndexById = (arr, id) => arr.findIndex((p) => p.id === id);
 
-  // API del carrito
+  
   const add = (product) => {
     if (!product || product.id == null) return;
 
     setItems((prev) => {
       const idx = findIndexById(prev, product.id);
       if (idx >= 0) {
-        // ya existe → qty + 1
+        
         const next = [...prev];
         const curr = next[idx];
         next[idx] = { ...curr, qty: (curr.qty ?? 1) + 1 };
         return next;
       }
-      // nuevo → qty inicial (por defecto 1)
+      
       const price = Number(product.price ?? 0);
       const qty = Number(product.qty ?? 1);
       return [...prev, { ...product, price, qty }];
@@ -77,11 +76,11 @@ export const CartProvider = ({ children }) => {
     [items]
   );
 
-  // Alias NO invasivo para tests/compatibilidad
+  
   const value = {
     items,
     add,
-    addToCart: add, // <- alias opcional, no afecta tu app
+    addToCart: add, 
     inc,
     dec,
     remove,

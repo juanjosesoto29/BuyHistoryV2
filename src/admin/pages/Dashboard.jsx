@@ -1,4 +1,4 @@
-// src/admin/pages/Dashboard.jsx
+
 import { read } from '../../data.products'
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'

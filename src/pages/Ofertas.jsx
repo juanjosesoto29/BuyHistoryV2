@@ -1,4 +1,4 @@
-// src/pages/Offers.jsx
+
 import { products } from '../data.products'
 import { useCart } from '../state/cart.jsx'
 import Swal from 'sweetalert2'

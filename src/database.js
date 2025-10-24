@@ -1,6 +1,4 @@
-// --- SIMULACIÓN DE BASE DE DATOS EN MEMORIA ---w
 
-// --- DATOS SIMULADOS ---
 
 let productos = [
   { id: 1, nombre: 'Moneda romana', precio: 45000, img: 'https://images.unsplash.com/photo-1571569089849-6e74d9a79fa9', categoria: 1, stock: 10, oferta: false },

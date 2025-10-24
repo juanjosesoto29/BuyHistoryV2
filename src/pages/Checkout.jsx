@@ -1,8 +1,8 @@
-// src/pages/Checkout.jsx
+
 import { useEffect, useMemo, useState } from 'react'
 import { useCart } from '../state/cart.jsx'
 import { useNavigate } from 'react-router-dom'
-import '../styles/shop.css' // asegúrate de tener los estilos que te pasé (ck-* y checkout-*)
+import '../styles/shop.css'
 
 const CHILE = {
   'Región Metropolitana de Santiago': [

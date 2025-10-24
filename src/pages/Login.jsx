@@ -1,6 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom'
 import { useState } from 'react'
-import '../styles/contact.css' // Reutilizamos el mismo CSS del contacto
+import '../styles/contact.css'
 
 export default function Login() {
   const nav = useNavigate()
@@ -9,20 +9,20 @@ export default function Login() {
   const submit = (e) => {
     e.preventDefault()
 
-    // 🧩 Validación del correo
+    //  Validación del correo
     const emailRegex = /^[\w.-]+@(gmail\.com|hotmail\.cl)$/i
     if (!emailRegex.test(form.email)) {
       alert('Solo se permiten correos @gmail.com o @hotmail.cl')
       return
     }
 
-    // 🧩 Validación de la contraseña
+    //  Validación de la contraseña
     if (form.password.length < 8) {
       alert('La contraseña debe tener al menos 8 caracteres.')
       return
     }
 
-    // 🧩 Si todo está bien, guardar usuario y redirigir
+    //  Si todo está bien, guardar usuario y redirigir
     const user = { name: form.email.split('@')[0], email: form.email }
     localStorage.setItem('bh_user', JSON.stringify(user))
     alert('Inicio de sesión exitoso.')

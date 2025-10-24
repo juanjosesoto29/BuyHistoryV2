@@ -1,4 +1,4 @@
-// src/components/ProductCard.jsx
+
 export default function ProductCard({ product, onAdd = () => {} }) {
   const {
     id,

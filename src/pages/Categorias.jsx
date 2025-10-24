@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 import '../styles/shop.css'
 
 export default function Categorias () {
-  // Mapa categoría -> {count, sampleImg}
   const data = useMemo(() => {
     const map = new Map()
     for (const p of products) {

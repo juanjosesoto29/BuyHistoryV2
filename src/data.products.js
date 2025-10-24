@@ -1,7 +1,6 @@
-// src/data.products.js
-export const products = [
-  // ... tus productos anteriores
 
+export const products = [
+  
   {
     id: 101,
     name: 'Sombrero de Napoleón',
@@ -77,7 +76,6 @@ export const products = [
 ]
 
 
-// CRUD simulado (memoria)
 export const create = (p) => { products.push(p); return p }
 export const read   = () => [...products]
 export const update = (id, patch) => {

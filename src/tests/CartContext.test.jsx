@@ -1,9 +1,9 @@
-// src/tests/CartContext.test.jsx
+
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
 import { CartProvider, useCart } from "../state/cart";
 
-// Componente de prueba que usa el contexto
+
 function CartProbe() {
   const { addToCart, items, count } = useCart();
   const sample = { id: 10, nombre: "Casco", precio: 50000 };

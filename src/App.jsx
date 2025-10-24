@@ -3,7 +3,7 @@ import Protected from './components/Protected.jsx'
 import MainLayout from './layouts/MainLayout.jsx'
 import AdminLayout from './layouts/AdminLayout.jsx'
 
-// Páginas ya existentes en tu proyecto:
+
 import Home from './pages/Home.jsx'
 import Catalog from './pages/Catalog.jsx'
 import Cart from './pages/Cart.jsx'
@@ -12,14 +12,14 @@ import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import Account from './pages/Account.jsx'
 
-// Páginas nuevas:
+
 import Categorias from './pages/Categorias.jsx'
 import Ofertas from './pages/Ofertas.jsx'
 import Checkout from './pages/Checkout.jsx'
 import PagoExitoso from './pages/PagoExitoso.jsx'
 import PagoFallido from './pages/PagoFallido.jsx'
 
-// Admin pages
+
 import Dashboard from './admin/pages/Dashboard.jsx'
 import Users from './admin/pages/Users.jsx'
 import Ordenes from './admin/pages/Ordenes.jsx'

@@ -23,11 +23,19 @@ export default function Login() {
     }
 
     //  Si todo está bien, guardar usuario y redirigir
-    const user = { name: form.email.split('@')[0], email: form.email }
+// Si el correo es admin, marcamos como administrador
+    const isAdmin = form.email === 'admin@gmail.com'
+
+// Guardamos usuario y rol en localStorage
+    const user = { name: form.email.split('@')[0], email: form.email, isAdmin }
     localStorage.setItem('bh_user', JSON.stringify(user))
-    alert('Inicio de sesión exitoso.')
-    nav('/cuenta')
+    localStorage.setItem('bh_isAdmin', JSON.stringify(isAdmin))
+
+alert('Inicio de sesión exitoso.')
+nav('/cuenta')
+
   }
+  
 
   return (
     <div className="contact-page"> {/* contenedor centrado */}

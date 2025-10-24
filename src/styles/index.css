@@ -5,10 +5,25 @@
 html, body, #root { height: 100%; }
 body { margin: 0; }
 
+/* Elimina márgenes globales */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Navbar fija, pegada al tope */
 .navbar {
-  position: static; 
+  position: fixed;
   top: 0;
+  left: 0;
   width: 100%;
   z-index: 1000;
+  margin: 0;
+  padding-top: 0;
+}
+
+/* Evita que el contenido quede oculto detrás de la navbar */
+main {
+  margin-top: 70px; /* ajusta según la altura de tu navbar */
 }
 

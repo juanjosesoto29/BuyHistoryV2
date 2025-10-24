@@ -35,6 +35,6 @@
     "karma-jasmine": "^5.1.0",
     "karma-vite": "^1.0.5",
     "vite": "^5.4.8",
-    "vitest": "^4.0.2"
+    "vitest": "^4.0.3"
   }
 }

@@ -33,6 +33,7 @@ export default function NavBar() {
     localStorage.removeItem('bh_user')
     localStorage.removeItem('bh_isAdmin')
     window.location.href = '/'
+
   }
 
   return (

@@ -32,7 +32,7 @@ export default function Login() {
     localStorage.setItem('bh_isAdmin', JSON.stringify(isAdmin))
 
 alert('Inicio de sesión exitoso.')
-nav('/cuenta')
+window.location.href = '/cuenta'
 
   }
   

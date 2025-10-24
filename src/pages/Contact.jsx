@@ -1,5 +1,5 @@
-// src/pages/Contact.jsx
 import { useState } from 'react'
+import '../styles/contact.css' // 👈 importa tu CSS personalizado
 
 export default function Contact() {
   const [form, setForm] = useState({ nombre:'', email:'', mensaje:'' })
@@ -10,10 +10,10 @@ export default function Contact() {
   }
 
   return (
-    <div className="row justify-content-center py-4">
-      <div className="col-12 col-md-8 col-lg-6">
-        <h2>Contacto</h2>
-        <form className="mt-3" onSubmit={submit}>
+    <div className="contact-page">
+      <div className="contact-card">
+        <h2 className="text-center mb-4">Contacto</h2>
+        <form onSubmit={submit}>
           <div className="mb-3">
             <label className="form-label">Nombre</label>
             <input className="form-control" required
@@ -29,7 +29,9 @@ export default function Contact() {
             <textarea className="form-control" rows="4" required
               value={form.mensaje} onChange={e=>setForm({...form, mensaje:e.target.value})}/>
           </div>
-          <button className="btn btn-dark">Enviar</button>
+          <div className="text-center">
+            <button className="btn btn-warning px-5">Enviar</button>
+          </div>
         </form>
       </div>
     </div>

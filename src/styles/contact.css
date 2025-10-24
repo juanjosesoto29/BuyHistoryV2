@@ -1,0 +1,16 @@
+.contact-page {
+  display: flex;
+  justify-content: center;     /* centra horizontalmente */
+  align-items: center;         /* centra verticalmente */
+  min-height: 100vh;           /* ocupa todo el alto de la pantalla */
+  background-color: #f6f0e5;   /* mismo tono que tu fondo actual */
+}
+
+.contact-card {
+  width: 100%;
+  max-width: 500px;
+  background-color: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}

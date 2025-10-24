@@ -9,29 +9,31 @@ export default function NavBar() {
 
   useEffect(() => {
     const handleStorageChange = () => {
-      const u = JSON.parse(localStorage.getItem('bh_user'))
-      setUser(u || null)
-      const flag = JSON.parse(localStorage.getItem('bh_isAdmin') || 'false')
-      setIsAdmin(!!u?.isAdmin || flag)
+      try {
+        const u = JSON.parse(localStorage.getItem('bh_user'))
+        const flag = JSON.parse(localStorage.getItem('bh_isAdmin') || 'false')
+        setUser(u || null)
+        setIsAdmin(!!u?.isAdmin || flag)
+      } catch {
+        setUser(null)
+        setIsAdmin(false)
+      }
     }
 
+    // Escuchar cambios del localStorage (para actualizar al iniciar/cerrar sesión)
     window.addEventListener('storage', handleStorageChange)
-    handleStorageChange()
-
+    handleStorageChange() // leer al montar
     return () => window.removeEventListener('storage', handleStorageChange)
   }, [])
 
-  {user && isAdmin && (
-  <li className="nav-item">
-    <NavLink to="/admin" className="btn btn-warning ms-2 text-dark fw-semibold">
-      Panel Admin
-    </NavLink>
-  </li>
-)}
-
-
   const link = ({ isActive }) =>
     `nav-link px-3 ${isActive ? 'active border-bottom border-2 border-warning' : ''}`
+
+  const logout = () => {
+    localStorage.removeItem('bh_user')
+    localStorage.removeItem('bh_isAdmin')
+    window.location.href = '/'
+  }
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-black">
@@ -51,28 +53,12 @@ export default function NavBar() {
 
         <div id="navBH" className="collapse navbar-collapse">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            <li className="nav-item">
-              <NavLink to="/catalogo" className={link}>
-                Catálogo
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink to="/categorias" className={link}>
-                Categorías
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink to="/ofertas" className={link}>
-                Ofertas
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink to="/contacto" className={link}>
-                Contacto
-              </NavLink>
-            </li>
+            <li className="nav-item"><NavLink to="/catalogo" className={link}>Catálogo</NavLink></li>
+            <li className="nav-item"><NavLink to="/categorias" className={link}>Categorías</NavLink></li>
+            <li className="nav-item"><NavLink to="/ofertas" className={link}>Ofertas</NavLink></li>
+            <li className="nav-item"><NavLink to="/contacto" className={link}>Contacto</NavLink></li>
 
-            {/* ✅ BOTÓN ADMIN visible solo si está logueado y es admin */}
+            {/* ✅ BOTÓN ADMIN — visible solo si está logueado y es admin */}
             {user && isAdmin && (
               <li className="nav-item">
                 <NavLink to="/admin" className="btn btn-warning ms-2 text-dark fw-semibold">
@@ -85,54 +71,24 @@ export default function NavBar() {
           <ul className="navbar-nav align-items-lg-center">
             <li className="nav-item me-2">
               <NavLink to="/carrito" className={link}>
-                Carrito{' '}
-                {count > 0 && (
-                  <span className="badge bg-warning text-dark ms-2">{count}</span>
-                )}
+                Carrito {count > 0 && <span className="badge bg-warning text-dark ms-2">{count}</span>}
               </NavLink>
             </li>
 
             {!user ? (
               <li className="nav-item">
-                <NavLink to="/login" className={link}>
-                  Ingresar
-                </NavLink>
+                <NavLink to="/login" className={link}>Ingresar</NavLink>
               </li>
             ) : (
               <li className="nav-item dropdown">
-                <Link
-                  className="nav-link dropdown-toggle px-3"
-                  data-bs-toggle="dropdown"
-                  to="#"
-                  role="button"
-                >
+                <Link className="nav-link dropdown-toggle px-3" data-bs-toggle="dropdown" to="#" role="button">
                   {user.name || 'Mi cuenta'}
                 </Link>
                 <ul className="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <Link className="dropdown-item" to="/cuenta">
-                      Perfil
-                    </Link>
-                  </li>
-                  {isAdmin && (
-                    <li>
-                      <Link className="dropdown-item" to="/admin">
-                        Panel Admin
-                      </Link>
-                    </li>
-                  )}
+                  <li><Link className="dropdown-item" to="/cuenta">Perfil</Link></li>
+                  {isAdmin && <li><Link className="dropdown-item" to="/admin">Panel Admin</Link></li>}
                   <li><hr className="dropdown-divider" /></li>
-                  <li>
-                    <button
-                      className="dropdown-item"
-                      onClick={() => {
-                        localStorage.removeItem('bh_user')
-                        location.href = '/'
-                      }}
-                    >
-                      Cerrar sesión
-                    </button>
-                  </li>
+                  <li><button className="dropdown-item" onClick={logout}>Cerrar sesión</button></li>
                 </ul>
               </li>
             )}

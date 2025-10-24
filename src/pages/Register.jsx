@@ -1,6 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom'
 import { useState } from 'react'
-import '../styles/contact.css' // 👈 reutilizamos el mismo CSS del contacto
+import '../styles/contact.css' // reutilizamos el mismo CSS
 
 export default function Register() {
   const nav = useNavigate()
@@ -8,38 +8,66 @@ export default function Register() {
 
   const submit = (e) => {
     e.preventDefault()
-    if (form.password.length < 6) {
-      alert('La contraseña debe tener al menos 6 caracteres.')
+
+    // 🧩 Validación del correo
+    const emailRegex = /^[\w.-]+@(gmail\.com|hotmail\.cl)$/i
+    if (!emailRegex.test(form.email)) {
+      alert('Solo se permiten correos @gmail.com o @hotmail.cl')
       return
     }
 
+    // 🧩 Validación de la contraseña
+    if (form.password.length < 8) {
+      alert('La contraseña debe tener al menos 8 caracteres.')
+      return
+    }
+
+    // 🧩 Si pasa las validaciones, guardar usuario
     const user = { name: form.name.trim(), email: form.email }
     localStorage.setItem('bh_user', JSON.stringify(user))
-    nav('/login') // redirige al login después del registro
+    alert('Registro exitoso. Ahora puedes iniciar sesión.')
+    nav('/login')
   }
 
   return (
-    <div className="contact-page"> {/* 👈 contenedor centrado */}
-      <div className="contact-card"> {/* 👈 tarjeta centrada */}
+    <div className="contact-page">
+      <div className="contact-card">
         <h3 className="text-center mb-4">Registro</h3>
 
         <form onSubmit={submit}>
           <div className="mb-3">
             <label className="form-label">Nombre</label>
-            <input className="form-control" required
-              value={form.name} onChange={e=>setForm({...form, name: e.target.value})}/>
+            <input
+              className="form-control"
+              required
+              placeholder="Agrega tu nombre completo"
+              value={form.name}
+              onChange={e => setForm({ ...form, name: e.target.value })}
+            />
           </div>
 
           <div className="mb-3">
             <label className="form-label">Email</label>
-            <input type="email" className="form-control" required
-              value={form.email} onChange={e=>setForm({...form, email: e.target.value})}/>
+            <input
+              type="email"
+              className="form-control"
+              required
+              placeholder="Agrega un correo válido, gmail o hotmail"
+              value={form.email}
+              onChange={e => setForm({ ...form, email: e.target.value })}
+            />
           </div>
 
           <div className="mb-3">
             <label className="form-label">Contraseña</label>
-            <input type="password" className="form-control" required
-              value={form.password} onChange={e=>setForm({...form, password: e.target.value})}/>
+            <input
+              type="password"
+              className="form-control"
+              required
+              placeholder="Mínimo 8 caracteres"
+              value={form.password}
+              onChange={e => setForm({ ...form, password: e.target.value })}
+            />
           </div>
 
           <button className="btn btn-warning w-100 text-dark">Crear cuenta</button>

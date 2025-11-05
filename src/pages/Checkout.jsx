@@ -88,13 +88,13 @@ export default function Checkout() {
     const data = await res.json()
 
     clear()
-    nav('/pago-exitoso', {
+    nav('/checkout/exito', {
       replace: true,
       state: { total, orderId: data.id }
     })
   } catch (err) {
     console.error(err)
-    nav('/pago-fallido', { replace: true })
+    nav('/checkout/fallido', { replace: true })
   } finally {
     setLoading(false)
   }

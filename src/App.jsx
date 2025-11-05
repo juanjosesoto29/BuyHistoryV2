@@ -26,6 +26,7 @@ import Ordenes from './admin/pages/Ordenes.jsx'
 import GestionProductos from './admin/pages/GestionProductos.jsx'
 import GestionCategorias from './admin/pages/GestionCategorias.jsx'
 import GestionUsuarios from './admin/pages/GestionUsuarios.jsx'
+import Reportes from './admin/pages/Reportes.jsx'
 
 export default function App() {
   return (
@@ -55,6 +56,7 @@ export default function App() {
           <Route path="gestion-productos" element={<GestionProductos />} />
           <Route path="gestion-categorias" element={<GestionCategorias />} />
           <Route path="gestion-usuarios" element={<GestionUsuarios />} />
+          <Route path="/admin/reportes" element={<Reportes />} />
         </Route>
       </Routes>
     </div>

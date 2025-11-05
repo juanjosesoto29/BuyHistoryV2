@@ -1,17 +1,5 @@
 
 
-let productos = [
-  { id: 1, nombre: 'Moneda romana', precio: 45000, img: 'https://images.unsplash.com/photo-1571569089849-6e74d9a79fa9', categoria: 1, stock: 10, oferta: false },
-  { id: 2, nombre: 'Mapa del siglo XVIII', precio: 99000, img: 'https://images.unsplash.com/photo-1519681393784-d120267933ba', categoria: 1, stock: 5, oferta: true },
-  { id: 3, nombre: 'Carta histórica', precio: 65000, img: 'https://images.unsplash.com/photo-1529119368496-2dfda6ec2804', categoria: 2, stock: 15, oferta: false },
-  { id: 4, nombre: 'Fotografía antigua', price: 39000, img:'https://images.unsplash.com/photo-1516239322118-4c71d3f4d9da', categoria: 2, stock: 20, oferta: true }
-];
-
-let categorias = [
-  { id: 1, nombre: 'Numismática y Mapas' },
-  { id: 2, nombre: 'Documentos y Fotografía' },
-];
-
 let usuarios = [
     {id: 1, nombre: "Juanjose Soto", correo: "juan.sotoc@example.com", contrasena: "password123", rol: "admin"},
     {id: 2, nombre: "Ana Gomez", correo: "ana.gomez@example.com", contrasena: "securepass", rol: "cliente"}

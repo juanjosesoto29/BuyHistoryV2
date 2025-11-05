@@ -1,13 +1,34 @@
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation, Link, Navigate } from 'react-router-dom'
 
-export default function CheckoutSuccess() {
-  const { state } = useLocation()
+export default function PagoExitoso() {
+  const location = useLocation()
+  const state = location.state
+
+  if (!state) return <Navigate to="/catalogo" replace />
+
+  const { total, orderId } = state
+
   return (
-    <div className="text-center py-5">
-      <div className="display-1 text-success mb-3">✓</div>
-      <h2>¡Compra realizada con éxito!</h2>
-      <p className="text-muted">Total pagado: ${Number(state?.total ?? 0).toLocaleString('es-CL')}</p>
-      <Link to="/" className="btn btn-dark mt-3">Volver al inicio</Link>
+    <div className="checkout-wrap">
+      <div className="checkout-inner">
+        <div className="checkout-card card p-4 text-center">
+          <h2 className="ck-title mb-2">✅ ¡Pago Exitoso!</h2>
+          <p className="ck-subtitle mb-4">Tu orden fue procesada correctamente.</p>
+
+          <div className="mb-3">
+            <p><strong>Número de orden:</strong> #{orderId}</p>
+            <p><strong>Total pagado:</strong> ${total.toLocaleString('es-CL')}</p>
+          </div>
+
+          <p className="text-muted mb-4">
+            Recibirás un correo con los detalles de tu compra.
+          </p>
+
+          <Link to="/catalogo" className="btn btn-pay">
+            Volver al catálogo
+          </Link>
+        </div>
+      </div>
     </div>
   )
 }

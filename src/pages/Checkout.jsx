@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useState } from 'react'
 import { useCart } from '../state/cart.jsx'
 import { useNavigate } from 'react-router-dom'
@@ -14,6 +13,8 @@ const CHILE = {
   ],
 }
 
+const ORDERS_API = 'http://localhost:8081/api/v1/orders'
+
 export default function Checkout() {
   const { items, total, clear } = useCart()
   const nav = useNavigate()
@@ -24,7 +25,8 @@ export default function Checkout() {
     notas:''
   })
 
-  // Prefill con usuario si existe
+  const [loading, setLoading] = useState(false)
+
   useEffect(() => {
     try {
       const u = JSON.parse(localStorage.getItem('bh_user'))
@@ -43,22 +45,68 @@ export default function Checkout() {
     )
   }
 
-  const onSubmit = (e) => {
-    e.preventDefault()
-    const required = ['nombre','apellidos','correo','calle','comuna']
-    if (required.some(k => !String(form[k]).trim())) {
-      return alert('Completa los campos obligatorios marcados con *')
-    }
-    clear()
-    nav('/checkout/exito', { replace: true, state: { total } })
+  const onSubmit = async (e) => {
+  e.preventDefault()
+
+  const required = ['nombre','apellidos','correo','calle','comuna']
+  if (required.some(k => !String(form[k]).trim())) {
+    return alert('Completa los campos obligatorios marcados con *')
   }
+
+  const payload = {
+    customerName: `${form.nombre} ${form.apellidos}`.trim(),
+    customerEmail: form.correo,
+
+    // 🔹 Dirección completa que espera el backend
+    addressStreet: form.calle,
+    addressDetail: form.depto,
+    region: form.region,
+    city: form.comuna,
+    notes: form.notas,
+
+    items: items.map(it => ({
+      productId: it.id,
+      productName: it.name,
+      quantity: it.qty,
+      price: it.price
+    }))
+  }
+
+  console.log('PAYLOAD A ENVIAR', payload)
+
+  try {
+    setLoading(true)
+
+    const res = await fetch('http://localhost:8081/api/v1/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+
+    if (!res.ok) throw new Error('Error al crear la orden')
+
+    const data = await res.json()
+
+    clear()
+    nav('/pago-exitoso', {
+      replace: true,
+      state: { total, orderId: data.id }
+    })
+  } catch (err) {
+    console.error(err)
+    nav('/pago-fallido', { replace: true })
+  } finally {
+    setLoading(false)
+  }
+}
+
 
   return (
     <div className="shop-page">
-      {/* Contenedor centrado */}
       <div className="checkout-wrap">
         <div className="checkout-inner">
-          {/* ===== Carrito ===== */}
+
+          {/* Carrito */}
           <div className="checkout-card card border-0">
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-start mb-3">
@@ -87,9 +135,9 @@ export default function Checkout() {
                       <tr key={it.id}>
                         <td>
                           <div className="rounded bg-light" style={{width:48,height:36,overflow:'hidden'}}>
-                            {it.img && (
+                            {(it.img || it.imageUrl) && (
                               <img
-                                src={it.img}
+                                src={it.img || it.imageUrl}
                                 alt={it.name}
                                 style={{width:'100%',height:'100%',objectFit:'cover'}}
                               />
@@ -108,14 +156,13 @@ export default function Checkout() {
             </div>
           </div>
 
-          {/* ===== Información del cliente ===== */}
+          {/* Información del cliente */}
           <div className="checkout-card card border-0">
             <div className="card-body">
               <div className="ck-title mb-1">Información del cliente</div>
               <div className="ck-subtitle">Completa la siguiente información</div>
 
               <form className="mt-3" onSubmit={onSubmit}>
-                {/* Nombre / Apellidos / Correo */}
                 <div className="row g-3">
                   <div className="col-12 col-md-12">
                     <label className="form-label">Nombre*</label>
@@ -150,14 +197,14 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                {/* ===== Dirección ===== */}
+                {/* Dirección */}
                 <div className="ck-section">
-                  <div className="ck-title">Dirección de entrega de los productos</div>
+                  <div className="ck-title">Dirección de entrega</div>
                   <div className="ck-subtitle">Ingrese dirección de forma detallada</div>
                 </div>
 
                 <div className="row g-3 mt-1">
-                  <div className="col-12 col-md-12">
+                  <div className="col-12">
                     <label className="form-label">Calle*</label>
                     <input
                       className="form-control ck-input ck-pill"
@@ -167,6 +214,7 @@ export default function Checkout() {
                       required
                     />
                   </div>
+
                   <div className="col-12 col-md-8">
                     <label className="form-label">Departamento (opcional)</label>
                     <input
@@ -177,7 +225,7 @@ export default function Checkout() {
                     />
                   </div>
 
-                  <div className="col-12 col-md-12">
+                  <div className="col-12">
                     <label className="form-label">Región*</label>
                     <select
                       className="form-select ck-select ck-pill"
@@ -194,7 +242,7 @@ export default function Checkout() {
                     </select>
                   </div>
 
-                  <div className="col-12 col-md-12">
+                  <div className="col-12">
                     <label className="form-label">Comuna*</label>
                     <select
                       className="form-select ck-select ck-pill"
@@ -205,14 +253,12 @@ export default function Checkout() {
                       <option value="" disabled>Seleccione una comuna</option>
                       {comunas.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
-                    <div className="form-text ck-help">Ej.: Cerrillos</div>
                   </div>
 
                   <div className="col-12">
-                    <label className="form-label">Indicaciones para la entrega (opcional)</label>
+                    <label className="form-label">Indicaciones (opcional)</label>
                     <textarea
                       className="form-control ck-textarea"
-                      rows="10"
                       placeholder="Ej.: Entre calles, color del edificio, no tiene timbre."
                       value={form.notas}
                       onChange={e=>setForm({...form, notas:e.target.value})}
@@ -221,16 +267,16 @@ export default function Checkout() {
                 </div>
 
                 <div className="d-flex justify-content-end mt-3">
-                  <button className="btn btn-pay">
-                    Pagar ahora ${total.toLocaleString('es-CL')}
+                  <button className="btn btn-pay" disabled={loading}>
+                    {loading ? 'Procesando...' : `Pagar ahora $${total.toLocaleString('es-CL')}`}
                   </button>
                 </div>
               </form>
             </div>
           </div>
 
-        </div>{/* checkout-inner */}
-      </div>{/* checkout-wrap */}
+        </div>
+      </div>
     </div>
   )
 }

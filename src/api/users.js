@@ -17,7 +17,7 @@ export async function loginUser(email, password) {
   })
   const data = await handleJson(res)
   if (!res.ok) throw new Error(data?.message || 'Error al iniciar sesión')
-  return data
+  return data // {id, name, email, role}
 }
 
 export async function registerUser({ name, email, password }) {
@@ -42,4 +42,15 @@ export async function deleteUser(id) {
     method: 'DELETE',
   })
   if (!res.ok) throw new Error('Error al eliminar usuario')
+}
+
+export async function updateUserRole(id, role) {
+  const res = await fetch(`${BASE_URL}/${id}/role`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ role }),
+  })
+  const data = await handleJson(res)
+  if (!res.ok) throw new Error(data?.message || 'No se pudo actualizar el rol')
+  return data // UserDto actualizado
 }

@@ -20,22 +20,38 @@ export default function Checkout() {
   const nav = useNavigate()
 
   const [form, setForm] = useState({
-    nombre:'', apellidos:'', correo:'',
-    calle:'', depto:'', region:'Región Metropolitana de Santiago', comuna:'',
-    notas:''
+    nombre: '',
+    apellidos: '',
+    correo: '',
+    calle: '',
+    depto: '',
+    region: 'Región Metropolitana de Santiago',
+    comuna: '',
+    notas: ''
   })
 
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
+  // Prefill con usuario si existe
   useEffect(() => {
     try {
       const u = JSON.parse(localStorage.getItem('bh_user'))
-      if (u) setForm(f => ({ ...f, nombre: u.name ?? '', correo: u.email ?? '' }))
-    } catch {}
+      if (u) {
+        setForm(f => ({
+          ...f,
+          nombre: u.name ?? '',
+          correo: u.email ?? ''
+        }))
+      }
+    } catch {
+      // nada
+    }
   }, [])
 
   const comunas = useMemo(() => CHILE[form.region] || [], [form.region])
 
+  // Si no hay productos en el carrito
   if (!items.length) {
     return (
       <div className="py-5 text-center">
@@ -45,77 +61,94 @@ export default function Checkout() {
     )
   }
 
+  const handleChange = (field) => (e) => {
+    const value = e.target.value
+    setForm(prev => ({ ...prev, [field]: value }))
+  }
+
   const onSubmit = async (e) => {
-  e.preventDefault()
+    e.preventDefault()
+    setError(null)
 
-  const required = ['nombre','apellidos','correo','calle','comuna']
-  if (required.some(k => !String(form[k]).trim())) {
-    return alert('Completa los campos obligatorios marcados con *')
+    const required = ['nombre','apellidos','correo','calle','comuna']
+    if (required.some(k => !String(form[k]).trim())) {
+      setError('Completa los campos obligatorios marcados con *')
+      return
+    }
+
+    const payload = {
+      customerName: `${form.nombre} ${form.apellidos}`.trim(),
+      customerEmail: form.correo.trim(),
+      addressStreet: form.calle.trim(),
+      addressDetail: form.depto.trim() || null,
+      region: form.region,
+      city: form.comuna,
+      notes: form.notas?.trim() || null,
+      total,
+      items: items.map(it => ({
+        productId: it.id,
+        productName: it.name,
+        quantity: it.qty,
+        price: it.price
+      }))
+    }
+
+    console.log('PAYLOAD A ENVIAR', payload)
+
+    try {
+      setLoading(true)
+
+      const res = await fetch(ORDERS_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+
+      const data = await res.json().catch(() => null)
+
+      if (!res.ok) {
+        throw new Error(data?.message || 'Error al crear la orden')
+      }
+
+      // Limpio carrito
+      clear()
+
+      // Paso toda la info a la pantalla de éxito
+      nav('/checkout/exito', {
+        replace: true,
+        state: {
+          order: data,
+          orderId: data?.id,
+          form,
+          items,
+          total
+        }
+      })
+    } catch (err) {
+      console.error(err)
+      setError(err.message || 'Ocurrió un error al procesar el pago')
+      nav('/checkout/fallido', { replace: true, state: { message: err.message } })
+    } finally {
+      setLoading(false)
+    }
   }
-
-  const payload = {
-    customerName: `${form.nombre} ${form.apellidos}`.trim(),
-    customerEmail: form.correo,
-
-    // 🔹 Dirección completa que espera el backend
-    addressStreet: form.calle,
-    addressDetail: form.depto,
-    region: form.region,
-    city: form.comuna,
-    notes: form.notas,
-
-    items: items.map(it => ({
-      productId: it.id,
-      productName: it.name,
-      quantity: it.qty,
-      price: it.price
-    }))
-  }
-
-  console.log('PAYLOAD A ENVIAR', payload)
-
-  try {
-    setLoading(true)
-
-    const res = await fetch('http://localhost:8081/api/v1/orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    })
-
-    if (!res.ok) throw new Error('Error al crear la orden')
-
-    const data = await res.json()
-
-    clear()
-    nav('/checkout/exito', {
-      replace: true,
-      state: { total, orderId: data.id }
-    })
-  } catch (err) {
-    console.error(err)
-    nav('/checkout/fallido', { replace: true })
-  } finally {
-    setLoading(false)
-  }
-}
-
 
   return (
     <div className="shop-page">
       <div className="checkout-wrap">
         <div className="checkout-inner">
 
-          {/* Carrito */}
+          {/* ===== Carrito ===== */}
           <div className="checkout-card card border-0">
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-start mb-3">
                 <div>
                   <div className="ck-title">Carrito de compra</div>
-                  <div className="ck-subtitle">Completa la siguiente información</div>
+                  <div className="ck-subtitle">Revisa los productos antes de pagar</div>
                 </div>
                 <span className="total-pill">
-                  Total a pagar: <strong>${total.toLocaleString('es-CL')}</strong>
+                  Total a pagar:{' '}
+                  <strong>${total.toLocaleString('es-CL')}</strong>
                 </span>
               </div>
 
@@ -134,7 +167,10 @@ export default function Checkout() {
                     {items.map(it => (
                       <tr key={it.id}>
                         <td>
-                          <div className="rounded bg-light" style={{width:48,height:36,overflow:'hidden'}}>
+                          <div
+                            className="rounded bg-light"
+                            style={{width:48,height:36,overflow:'hidden'}}
+                          >
                             {(it.img || it.imageUrl) && (
                               <img
                                 src={it.img || it.imageUrl}
@@ -147,7 +183,9 @@ export default function Checkout() {
                         <td>{it.name}</td>
                         <td>${Number(it.price).toLocaleString('es-CL')}</td>
                         <td>{it.qty}</td>
-                        <td>${Number(it.price * it.qty).toLocaleString('es-CL')}</td>
+                        <td>
+                          ${Number(it.price * it.qty).toLocaleString('es-CL')}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -156,13 +194,22 @@ export default function Checkout() {
             </div>
           </div>
 
-          {/* Información del cliente */}
+          {/* ===== Información del cliente ===== */}
           <div className="checkout-card card border-0">
             <div className="card-body">
               <div className="ck-title mb-1">Información del cliente</div>
-              <div className="ck-subtitle">Completa la siguiente información</div>
+              <div className="ck-subtitle">
+                Completa la siguiente información
+              </div>
+
+              {error && (
+                <div className="alert alert-danger mt-3 py-2">
+                  {error}
+                </div>
+              )}
 
               <form className="mt-3" onSubmit={onSubmit}>
+                {/* Nombre / Apellidos / Correo en 3 columnas */}
                 <div className="row g-3">
                   <div className="col-12 col-md-12">
                     <label className="form-label">Nombre*</label>
@@ -170,7 +217,7 @@ export default function Checkout() {
                       className="form-control ck-input ck-pill"
                       placeholder="Nombre"
                       value={form.nombre}
-                      onChange={e=>setForm({...form, nombre:e.target.value})}
+                      onChange={handleChange('nombre')}
                       required
                     />
                   </div>
@@ -180,60 +227,72 @@ export default function Checkout() {
                       className="form-control ck-input ck-pill"
                       placeholder="Apellidos"
                       value={form.apellidos}
-                      onChange={e=>setForm({...form, apellidos:e.target.value})}
+                      onChange={handleChange('apellidos')}
                       required
                     />
                   </div>
-                  <div className="col-12">
+                  <div className="col-12 col-md-12">
                     <label className="form-label">Correo*</label>
                     <input
                       type="email"
                       className="form-control ck-input ck-pill"
                       placeholder="correo@ejemplo.com"
                       value={form.correo}
-                      onChange={e=>setForm({...form, correo:e.target.value})}
+                      onChange={handleChange('correo')}
                       required
                     />
                   </div>
                 </div>
 
-                {/* Dirección */}
+                {/* ===== Dirección ===== */}
                 <div className="ck-section">
-                  <div className="ck-title">Dirección de entrega</div>
-                  <div className="ck-subtitle">Ingrese dirección de forma detallada</div>
+                  <div className="ck-title">
+                    Dirección de entrega de los productos
+                  </div>
+                  <div className="ck-subtitle">
+                    Ingrese dirección de forma detallada
+                  </div>
                 </div>
 
                 <div className="row g-3 mt-1">
-                  <div className="col-12">
+                  {/* Calle 8 / Depto 4 */}
+                  <div className="col-12 col-md-12">
                     <label className="form-label">Calle*</label>
                     <input
                       className="form-control ck-input ck-pill"
                       placeholder="Ej: Av. Siempre Viva 742"
                       value={form.calle}
-                      onChange={e=>setForm({...form, calle:e.target.value})}
+                      onChange={handleChange('calle')}
                       required
                     />
                   </div>
 
-                  <div className="col-12 col-md-8">
-                    <label className="form-label">Departamento (opcional)</label>
+                  <div className="col-12 col-md-4">
+                    <label className="form-label">
+                      Departamento (opcional)
+                    </label>
                     <input
                       className="form-control ck-input ck-pill"
-                      placeholder="Ej: 603"
+                      placeholder="Ej: Depto 603"
                       value={form.depto}
-                      onChange={e=>setForm({...form, depto:e.target.value})}
+                      onChange={handleChange('depto')}
                     />
                   </div>
 
-                  <div className="col-12">
+                  {/* Región 6 / Comuna 6 */}
+                  <div className="col-12 col-md-12">
                     <label className="form-label">Región*</label>
                     <select
                       className="form-select ck-select ck-pill"
                       value={form.region}
-                      onChange={e=>{
+                      onChange={e => {
                         const region = e.target.value
                         const first = (CHILE[region] || [])[0] || ''
-                        setForm(f => ({ ...f, region, comuna: first }))
+                        setForm(f => ({
+                          ...f,
+                          region,
+                          comuna: first
+                        }))
                       }}
                     >
                       {Object.keys(CHILE).map(r => (
@@ -242,33 +301,41 @@ export default function Checkout() {
                     </select>
                   </div>
 
-                  <div className="col-12">
+                  <div className="col-12 col-md-8">
                     <label className="form-label">Comuna*</label>
                     <select
                       className="form-select ck-select ck-pill"
                       value={form.comuna}
-                      onChange={e=>setForm({...form, comuna:e.target.value})}
+                      onChange={handleChange('comuna')}
                       required
                     >
                       <option value="" disabled>Seleccione una comuna</option>
-                      {comunas.map(c => <option key={c} value={c}>{c}</option>)}
+                      {comunas.map(c => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
                     </select>
+                    <div className="form-text ck-help">Ej.: Cerrillos</div>
                   </div>
 
+                  {/* Notas */}
                   <div className="col-12">
-                    <label className="form-label">Indicaciones (opcional)</label>
+                    <label className="form-label">
+                      Indicaciones para la entrega (opcional)
+                    </label>
                     <textarea
                       className="form-control ck-textarea"
                       placeholder="Ej.: Entre calles, color del edificio, no tiene timbre."
                       value={form.notas}
-                      onChange={e=>setForm({...form, notas:e.target.value})}
+                      onChange={handleChange('notas')}
                     />
                   </div>
                 </div>
 
                 <div className="d-flex justify-content-end mt-3">
                   <button className="btn btn-pay" disabled={loading}>
-                    {loading ? 'Procesando...' : `Pagar ahora $${total.toLocaleString('es-CL')}`}
+                    {loading
+                      ? 'Procesando...'
+                      : `Pagar ahora $${total.toLocaleString('es-CL')}`}
                   </button>
                 </div>
               </form>

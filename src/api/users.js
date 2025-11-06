@@ -16,16 +16,18 @@ export async function loginUser(email, password) {
     body: JSON.stringify({ email, password })
   })
 
-  const data = await handleJson(res)
+  const text = await res.text()
+  const data = text ? JSON.parse(text) : null
 
   if (!res.ok) {
     const msg = data?.message || 'Error al iniciar sesión'
     throw new Error(msg)
   }
 
-  // data es el UserDto { id, name, email, role }
-  return data
+  return data // {id, name, email, role}
 }
+
+
 
 export async function registerUser({ name, email, password }) {
   const res = await fetch(`${BASE_URL}/register`, {

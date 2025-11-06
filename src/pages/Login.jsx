@@ -1,79 +1,87 @@
-import { useNavigate, Link } from 'react-router-dom'
 import { useState } from 'react'
-import '../styles/contact.css'
+import { useNavigate } from 'react-router-dom'
+import { loginUser } from '../api/users'
 
 export default function Login() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
   const nav = useNavigate()
-  const [form, setForm] = useState({ email: '', password: '' })
 
-  const submit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault()
+    setError(null)
 
-    //  Validación del correo
-    const emailRegex = /^[\w.-]+@(gmail\.com|hotmail\.cl)$/i
-    if (!emailRegex.test(form.email)) {
-      alert('Solo se permiten correos @gmail.com o @hotmail.cl')
+    if (!email.trim() || !password.trim()) {
+      setError('Ingresa correo y contraseña')
       return
     }
 
-    //  Validación de la contraseña
-    if (form.password.length < 8) {
-      alert('La contraseña debe tener al menos 8 caracteres.')
-      return
+    try {
+      setLoading(true)
+      const user = await loginUser(email, password)
+
+      // Guardamos igual que usas en Checkout: "bh_user"
+      localStorage.setItem('bh_user', JSON.stringify(user))
+
+      // Si es admin lo mandamos al dashboard, si no a la tienda
+      if (user.role === 'admin') {
+        nav('/admin', { replace: true })
+      } else {
+        nav('/', { replace: true })
+      }
+    } catch (err) {
+      console.error(err)
+      setError(err.message)
+    } finally {
+      setLoading(false)
     }
-
-    //  Si todo está bien, guardar usuario y redirigir
-// Si el correo es admin, marcamos como administrador
-    const isAdmin = form.email === 'admin@gmail.com'
-
-// Guardamos usuario y rol en localStorage
-    const user = { name: form.email.split('@')[0], email: form.email, isAdmin }
-    localStorage.setItem('bh_user', JSON.stringify(user))
-    localStorage.setItem('bh_isAdmin', JSON.stringify(isAdmin))
-
-alert('Inicio de sesión exitoso.')
-window.location.href = '/cuenta'
-
   }
-  
 
   return (
-    <div className="contact-page"> {/* contenedor centrado */}
-      <div className="contact-card"> {/* tarjeta */}
-        <h3 className="text-center mb-4">Iniciar sesión</h3>
+    <div className="container py-5" style={{ maxWidth: 420 }}>
+      <h2 className="mb-3 text-center">Iniciar sesión</h2>
+      <p className="text-muted text-center mb-4">
+        Accede con tu correo y contraseña.
+      </p>
 
-        <form onSubmit={submit}>
-          <div className="mb-3">
-            <label className="form-label">Email</label>
-            <input
-              type="email"
-              className="form-control"
-              required
-              placeholder="Tu correo @gmail.com o @hotmail.cl"
-              value={form.email}
-              onChange={e => setForm({ ...form, email: e.target.value })}
-            />
-          </div>
+      {error && (
+        <div className="alert alert-danger py-2">{error}</div>
+      )}
 
-          <div className="mb-3">
-            <label className="form-label">Contraseña</label>
-            <input
-              type="password"
-              className="form-control"
-              required
-              placeholder="Mínimo 8 caracteres"
-              value={form.password}
-              onChange={e => setForm({ ...form, password: e.target.value })}
-            />
-          </div>
+      <form onSubmit={onSubmit} className="d-grid gap-3">
+        <div>
+          <label className="form-label">Correo</label>
+          <input
+            type="email"
+            className="form-control"
+            placeholder="correo@ejemplo.com"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+          />
+        </div>
 
-          <button className="btn btn-warning w-100">Entrar</button>
-        </form>
+        <div>
+          <label className="form-label">Contraseña</label>
+          <input
+            type="password"
+            className="form-control"
+            placeholder="********"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+          />
+        </div>
 
-        <p className="mt-3 mb-0 text-center text-muted">
-          ¿No tienes cuenta? <Link to="/registro">Regístrate</Link>
-        </p>
-      </div>
+        <button
+          className="btn btn-primary mt-2"
+          disabled={loading}
+        >
+          {loading ? 'Ingresando...' : 'Ingresar'}
+        </button>
+      </form>
     </div>
   )
 }

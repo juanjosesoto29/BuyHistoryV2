@@ -11,18 +11,17 @@ export default function NavBar() {
     const handleStorageChange = () => {
       try {
         const u = JSON.parse(localStorage.getItem('bh_user'))
-        const flag = JSON.parse(localStorage.getItem('bh_isAdmin') || 'false')
         setUser(u || null)
-        setIsAdmin(!!u?.isAdmin || flag)
+        setIsAdmin(u?.role === 'admin')
       } catch {
         setUser(null)
         setIsAdmin(false)
       }
     }
 
-    // Escuchar cambios del localStorage (para actualizar al iniciar/cerrar sesión)
+    // Leer al montar y escuchar cambios de sesión
+    handleStorageChange()
     window.addEventListener('storage', handleStorageChange)
-    handleStorageChange() // leer al montar
     return () => window.removeEventListener('storage', handleStorageChange)
   }, [])
 
@@ -31,9 +30,9 @@ export default function NavBar() {
 
   const logout = () => {
     localStorage.removeItem('bh_user')
-    localStorage.removeItem('bh_isAdmin')
+    setUser(null)
+    setIsAdmin(false)
     window.location.href = '/'
-
   }
 
   return (
@@ -59,37 +58,58 @@ export default function NavBar() {
             <li className="nav-item"><NavLink to="/ofertas" className={link}>Ofertas</NavLink></li>
             <li className="nav-item"><NavLink to="/contacto" className={link}>Contacto</NavLink></li>
 
-            {/* ✅ BOTÓN ADMIN — visible solo si está logueado y es admin */}
+            {/* ✅ PANEL ADMIN — visible solo si el usuario es admin */}
             {user && isAdmin && (
               <li className="nav-item">
-                <NavLink to="/admin" className="btn btn-warning ms-2 text-dark fw-semibold">
+                <NavLink
+                  to="/admin"
+                  className="btn btn-warning ms-2 text-dark fw-semibold"
+                >
                   Panel Admin
                 </NavLink>
               </li>
             )}
           </ul>
 
+          {/* === DERECHA === */}
           <ul className="navbar-nav align-items-lg-center">
             <li className="nav-item me-2">
               <NavLink to="/carrito" className={link}>
-                Carrito {count > 0 && <span className="badge bg-warning text-dark ms-2">{count}</span>}
+                Carrito{' '}
+                {count > 0 && (
+                  <span className="badge bg-warning text-dark ms-2">
+                    {count}
+                  </span>
+                )}
               </NavLink>
             </li>
 
+            {/* === Login / Usuario === */}
             {!user ? (
               <li className="nav-item">
-                <NavLink to="/login" className={link}>Ingresar</NavLink>
+                <NavLink to="/login" className={link}>
+                  Ingresar
+                </NavLink>
               </li>
             ) : (
               <li className="nav-item dropdown">
-                <Link className="nav-link dropdown-toggle px-3" data-bs-toggle="dropdown" to="#" role="button">
+                <Link
+                  className="nav-link dropdown-toggle px-3"
+                  data-bs-toggle="dropdown"
+                  to="#"
+                  role="button"
+                >
                   {user.name || 'Mi cuenta'}
                 </Link>
                 <ul className="dropdown-menu dropdown-menu-end">
                   <li><Link className="dropdown-item" to="/cuenta">Perfil</Link></li>
                   {isAdmin && <li><Link className="dropdown-item" to="/admin">Panel Admin</Link></li>}
                   <li><hr className="dropdown-divider" /></li>
-                  <li><button className="dropdown-item" onClick={logout}>Cerrar sesión</button></li>
+                  <li>
+                    <button className="dropdown-item" onClick={logout}>
+                      Cerrar sesión
+                    </button>
+                  </li>
                 </ul>
               </li>
             )}

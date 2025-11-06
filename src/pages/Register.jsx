@@ -1,82 +1,100 @@
-import { useNavigate, Link } from 'react-router-dom'
 import { useState } from 'react'
-import '../styles/contact.css'
+import { useNavigate, Link } from 'react-router-dom'
+import { registerUser } from '../api/users'
 
 export default function Register() {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
   const nav = useNavigate()
-  const [form, setForm] = useState({ name:'', email:'', password:'' })
 
-  const submit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault()
+    setError(null)
 
-    //  Validación del correo
-    const emailRegex = /^[\w.-]+@(gmail\.com|hotmail\.cl)$/i
-    if (!emailRegex.test(form.email)) {
-      alert('Solo se permiten correos @gmail.com o @hotmail.cl')
+    if (!name.trim() || !email.trim() || !password.trim()) {
+      setError('Completa todos los campos')
       return
     }
 
-    //  Validación de la contraseña
-    if (form.password.length < 8) {
-      alert('La contraseña debe tener al menos 8 caracteres.')
-      return
-    }
+    try {
+      setLoading(true)
+      const user = await registerUser({ name, email, password })
 
-    //  Si pasa las validaciones, guardar usuario
-    const user = { name: form.name.trim(), email: form.email }
-    localStorage.setItem('bh_user', JSON.stringify(user))
-    alert('Registro exitoso. Ahora puedes iniciar sesión.')
-    nav('/login')
+      // Iniciar sesión automáticamente
+      localStorage.setItem('bh_user', JSON.stringify(user))
+
+      // Redirigir según rol
+      if (user.role === 'admin') {
+        nav('/admin', { replace: true })
+      } else {
+        nav('/', { replace: true })
+      }
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
-    <div className="contact-page">
-      <div className="contact-card">
-        <h3 className="text-center mb-4">Registro</h3>
+    <div className="container py-5" style={{ maxWidth: 420 }}>
+      <h2 className="mb-3 text-center">Crear cuenta</h2>
+      <p className="text-muted text-center mb-4">
+        Regístrate para comprar y revisar tus pedidos.
+      </p>
 
-        <form onSubmit={submit}>
-          <div className="mb-3">
-            <label className="form-label">Nombre</label>
-            <input
-              className="form-control"
-              required
-              placeholder="Agrega tu nombre completo"
-              value={form.name}
-              onChange={e => setForm({ ...form, name: e.target.value })}
-            />
-          </div>
+      {error && (
+        <div className="alert alert-danger py-2">{error}</div>
+      )}
 
-          <div className="mb-3">
-            <label className="form-label">Email</label>
-            <input
-              type="email"
-              className="form-control"
-              required
-              placeholder="Agrega un correo válido, gmail o hotmail"
-              value={form.email}
-              onChange={e => setForm({ ...form, email: e.target.value })}
-            />
-          </div>
+      <form onSubmit={onSubmit} className="d-grid gap-3">
+        <div>
+          <label className="form-label">Nombre</label>
+          <input
+            className="form-control"
+            placeholder="Tu nombre"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            required
+          />
+        </div>
 
-          <div className="mb-3">
-            <label className="form-label">Contraseña</label>
-            <input
-              type="password"
-              className="form-control"
-              required
-              placeholder="Mínimo 8 caracteres"
-              value={form.password}
-              onChange={e => setForm({ ...form, password: e.target.value })}
-            />
-          </div>
+        <div>
+          <label className="form-label">Correo</label>
+          <input
+            type="email"
+            className="form-control"
+            placeholder="correo@ejemplo.com"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+          />
+        </div>
 
-          <button className="btn btn-warning w-100 text-dark">Crear cuenta</button>
-        </form>
+        <div>
+          <label className="form-label">Contraseña</label>
+          <input
+            type="password"
+            className="form-control"
+            placeholder="Mínimo 6 caracteres"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+          />
+        </div>
 
-        <p className="mt-3 mb-0 text-center text-muted">
-          ¿Ya tienes cuenta? <Link to="/login">Ingresar</Link>
-        </p>
-      </div>
+        <button className="btn btn-primary mt-2" disabled={loading}>
+          {loading ? 'Creando cuenta...' : 'Registrarme'}
+        </button>
+      </form>
+
+      <p className="text-center mt-3">
+        ¿Ya tienes cuenta?{' '}
+        <Link to="/login">Inicia sesión</Link>
+      </p>
     </div>
   )
 }

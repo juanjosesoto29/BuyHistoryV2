@@ -13,36 +13,21 @@ export async function loginUser(email, password) {
   const res = await fetch(`${BASE_URL}/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify({ email, password }),
   })
-
-  const text = await res.text()
-  const data = text ? JSON.parse(text) : null
-
-  if (!res.ok) {
-    const msg = data?.message || 'Error al iniciar sesión'
-    throw new Error(msg)
-  }
-
-  return data // {id, name, email, role}
+  const data = await handleJson(res)
+  if (!res.ok) throw new Error(data?.message || 'Error al iniciar sesión')
+  return data
 }
-
-
 
 export async function registerUser({ name, email, password }) {
   const res = await fetch(`${BASE_URL}/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, email, password })
+    body: JSON.stringify({ name, email, password }),
   })
-
   const data = await handleJson(res)
-
-  if (!res.ok) {
-    const msg = data?.message || 'Error al registrar usuario'
-    throw new Error(msg)
-  }
-
+  if (!res.ok) throw new Error(data?.message || 'Error al registrar usuario')
   return data
 }
 
@@ -54,7 +39,7 @@ export async function getUsers() {
 
 export async function deleteUser(id) {
   const res = await fetch(`${BASE_URL}/${id}`, {
-    method: 'DELETE'
+    method: 'DELETE',
   })
   if (!res.ok) throw new Error('Error al eliminar usuario')
 }

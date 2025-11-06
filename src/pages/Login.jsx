@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { loginUser } from '../api/users'
+
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -82,6 +83,10 @@ export default function Login() {
           {loading ? 'Ingresando...' : 'Ingresar'}
         </button>
       </form>
+      <p className="text-center mt-3">
+      ¿No tienes cuenta?{' '}
+      <Link to="/registro">Crea una aquí</Link>
+      </p>
     </div>
   )
 }

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { loginUser } from '../api/users'
 
-
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -23,18 +22,23 @@ export default function Login() {
       setLoading(true)
       const user = await loginUser(email, password)
 
-      // Guardamos igual que usas en Checkout: "bh_user"
-      localStorage.setItem('bh_user', JSON.stringify(user))
+      // 🔹 Verificamos si el rol devuelto por el backend es ADMIN
+      const isAdmin = user.role?.toUpperCase() === 'ADMIN'
 
-      // Si es admin lo mandamos al dashboard, si no a la tienda
-      if (user.role === 'admin') {
+      // 🔹 Guardamos los datos en localStorage con el flag de admin
+      localStorage.setItem('bh_user', JSON.stringify({ ...user, isAdmin }))
+      localStorage.setItem('bh_isAdmin', JSON.stringify(isAdmin))
+
+      // 🔹 Redirección según el rol
+      if (isAdmin) {
         nav('/admin', { replace: true })
       } else {
         nav('/', { replace: true })
       }
+
     } catch (err) {
       console.error(err)
-      setError(err.message)
+      setError(err.message || 'Error al iniciar sesión')
     } finally {
       setLoading(false)
     }
@@ -83,9 +87,10 @@ export default function Login() {
           {loading ? 'Ingresando...' : 'Ingresar'}
         </button>
       </form>
+
       <p className="text-center mt-3">
-      ¿No tienes cuenta?{' '}
-      <Link to="/registro">Crea una aquí</Link>
+        ¿No tienes cuenta?{' '}
+        <Link to="/registro">Crea una aquí</Link>
       </p>
     </div>
   )

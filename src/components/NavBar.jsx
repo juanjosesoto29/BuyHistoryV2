@@ -8,35 +8,49 @@ export default function NavBar() {
   const [isAdmin, setIsAdmin] = useState(false)
   const location = useLocation()
 
-  // Leer bh_user cada vez que cambia la ruta
+  // ✅ Leer bh_user y detectar rol ADMIN
   useEffect(() => {
     try {
       const u = JSON.parse(localStorage.getItem('bh_user'))
+
+      // Detectar si es admin por rol o flag guardado
+      const admin =
+        !!u &&
+        (
+          u.role?.toUpperCase() === 'ADMIN' || // Backend MongoDB
+          u.isAdmin === true                   // Flag desde login
+        )
+
       setUser(u || null)
-      setIsAdmin(u?.role === 'admin')
+      setIsAdmin(admin)
     } catch {
       setUser(null)
       setIsAdmin(false)
     }
   }, [location.pathname])
 
+  // Estilos activos
   const link = ({ isActive }) =>
     `nav-link px-3 ${isActive ? 'active border-bottom border-2 border-warning' : ''}`
 
+  // Cerrar sesión
   const logout = () => {
     localStorage.removeItem('bh_user')
+    localStorage.removeItem('bh_isAdmin')
     setUser(null)
     setIsAdmin(false)
     window.location.href = '/'
   }
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-black">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-black shadow-sm">
       <div className="container">
+        {/* Marca */}
         <NavLink to="/" className="navbar-brand fw-bold text-warning">
           BUY HISTORY
         </NavLink>
 
+        {/* Botón hamburguesa */}
         <button
           className="navbar-toggler"
           type="button"
@@ -46,35 +60,33 @@ export default function NavBar() {
           <span className="navbar-toggler-icon"></span>
         </button>
 
+        {/* Menú principal */}
         <div id="navBH" className="collapse navbar-collapse">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <NavLink to="/catalogo" className={link}>Catálogo</NavLink>
+              <NavLink to="/catalogo" className={link}>
+                Catálogo
+              </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/categorias" className={link}>Categorías</NavLink>
+              <NavLink to="/categorias" className={link}>
+                Categorías
+              </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/ofertas" className={link}>Ofertas</NavLink>
+              <NavLink to="/ofertas" className={link}>
+                Ofertas
+              </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/contacto" className={link}>Contacto</NavLink>
+              <NavLink to="/contacto" className={link}>
+                Contacto
+              </NavLink>
             </li>
 
-            {/* Panel Admin solo para rol admin */}
-            {user && isAdmin && (
-              <li className="nav-item">
-                <NavLink
-                  to="/admin"
-                  className="btn btn-warning ms-2 text-dark fw-semibold"
-                >
-                  Panel Admin
-                </NavLink>
-              </li>
-            )}
-          </ul>
-
+            {/* Acciones lado derecho */}
           <ul className="navbar-nav align-items-lg-center">
+            {/* Carrito */}
             <li className="nav-item me-2">
               <NavLink to="/carrito" className={link}>
                 Carrito{' '}
@@ -86,7 +98,22 @@ export default function NavBar() {
               </NavLink>
             </li>
 
-            {/* Login / Menú de cuenta */}
+            {/* 🔸 Panel Admin visible solo si el usuario es ADMIN */}
+            {user && isAdmin && (
+              <li className="nav-item">
+                <NavLink
+                  to="/admin"
+                  className="btn btn-warning ms-2 fw-semibold text-dark"
+                >
+                  Panel Admin
+                </NavLink>
+              </li>
+            )}
+          </ul>
+
+          
+
+            {/* 🔹 Si no hay usuario → botón Ingresar */}
             {!user ? (
               <li className="nav-item">
                 <NavLink to="/login" className={link}>
@@ -94,21 +121,32 @@ export default function NavBar() {
                 </NavLink>
               </li>
             ) : (
+              // 🔹 Menú desplegable del usuario logueado
               <li className="nav-item dropdown">
                 <Link
-                  className="nav-link dropdown-toggle px-3"
+                  className="nav-link dropdown-toggle px-3 d-flex align-items-center"
                   data-bs-toggle="dropdown"
                   to="#"
                   role="button"
                 >
-                  {user.name || 'Mi cuenta'}
+                  <span>{user.name || 'Mi cuenta'}</span>
+                  {isAdmin && (
+                    <span
+                      className="ms-2 badge bg-warning text-dark"
+                      style={{ fontSize: '0.7rem' }}
+                    >
+                      👑 Admin
+                    </span>
+                  )}
                 </Link>
+
                 <ul className="dropdown-menu dropdown-menu-end">
                   <li>
                     <Link className="dropdown-item" to="/cuenta">
                       Perfil
                     </Link>
                   </li>
+
                   {isAdmin && (
                     <li>
                       <Link className="dropdown-item" to="/admin">
@@ -116,9 +154,11 @@ export default function NavBar() {
                       </Link>
                     </li>
                   )}
+
                   <li>
                     <hr className="dropdown-divider" />
                   </li>
+
                   <li>
                     <button className="dropdown-item" onClick={logout}>
                       Cerrar sesión

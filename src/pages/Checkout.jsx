@@ -127,7 +127,7 @@ export default function Checkout() {
     } catch (err) {
       console.error(err)
       setError(err.message || 'Ocurrió un error al procesar el pago')
-      nav('/checkout/fallido', { replace: true, state: { message: err.message } })
+      nav('/checkout/error', { replace: true, state: { message: err.message } })
     } finally {
       setLoading(false)
     }
@@ -267,7 +267,7 @@ export default function Checkout() {
                     />
                   </div>
 
-                  <div className="col-12 col-md-4">
+                  <div className="col-12 col-md-6">
                     <label className="form-label">
                       Departamento (opcional)
                     </label>

@@ -13,12 +13,11 @@ export default function NavBar() {
     try {
       const u = JSON.parse(localStorage.getItem('bh_user'))
 
-      // Detectar si es admin por rol o flag guardado
       const admin =
         !!u &&
         (
-          u.role?.toUpperCase() === 'ADMIN' || // Backend MongoDB
-          u.isAdmin === true                   // Flag desde login
+          u.role?.toUpperCase() === 'ADMIN' ||
+          u.isAdmin === true
         )
 
       setUser(u || null)
@@ -33,7 +32,6 @@ export default function NavBar() {
   const link = ({ isActive }) =>
     `nav-link px-3 ${isActive ? 'active border-bottom border-2 border-warning' : ''}`
 
-  // Cerrar sesión
   const logout = () => {
     localStorage.removeItem('bh_user')
     localStorage.removeItem('bh_isAdmin')
@@ -44,7 +42,7 @@ export default function NavBar() {
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-black shadow-sm">
-      <div className="container">
+    <div className="container-fluid px-4">
         {/* Marca */}
         <NavLink to="/" className="navbar-brand fw-bold text-warning">
           BUY HISTORY
@@ -60,8 +58,8 @@ export default function NavBar() {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* Menú principal */}
         <div id="navBH" className="collapse navbar-collapse">
+          {/* IZQUIERDA: menú principal */}
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
               <NavLink to="/catalogo" className={link}>
@@ -83,9 +81,10 @@ export default function NavBar() {
                 Contacto
               </NavLink>
             </li>
+          </ul>
 
-            {/* Acciones lado derecho */}
-          <ul className="navbar-nav align-items-lg-center">
+          {/* DERECHA: carrito + panel admin + login / usuario */}
+          <ul className="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
             {/* Carrito */}
             <li className="nav-item me-2">
               <NavLink to="/carrito" className={link}>
@@ -98,22 +97,19 @@ export default function NavBar() {
               </NavLink>
             </li>
 
-            {/* 🔸 Panel Admin visible solo si el usuario es ADMIN */}
+            {/* Panel Admin botón solo si es admin */}
             {user && isAdmin && (
-              <li className="nav-item">
+              <li className="nav-item me-2">
                 <NavLink
                   to="/admin"
-                  className="btn btn-warning ms-2 fw-semibold text-dark"
+                  className="btn btn-warning fw-semibold text-dark"
                 >
                   Panel Admin
                 </NavLink>
               </li>
             )}
-          </ul>
 
-          
-
-            {/* 🔹 Si no hay usuario → botón Ingresar */}
+            {/* Login / usuario */}
             {!user ? (
               <li className="nav-item">
                 <NavLink to="/login" className={link}>
@@ -121,7 +117,6 @@ export default function NavBar() {
                 </NavLink>
               </li>
             ) : (
-              // 🔹 Menú desplegable del usuario logueado
               <li className="nav-item dropdown">
                 <Link
                   className="nav-link dropdown-toggle px-3 d-flex align-items-center"
@@ -155,9 +150,7 @@ export default function NavBar() {
                     </li>
                   )}
 
-                  <li>
-                    <hr className="dropdown-divider" />
-                  </li>
+                  <li><hr className="dropdown-divider" /></li>
 
                   <li>
                     <button className="dropdown-item" onClick={logout}>

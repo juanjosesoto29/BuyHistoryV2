@@ -1,30 +1,16 @@
 // src/api/orders.js
+const ORDERS_API_URL = 'http://localhost:8087/api/v1/orders' // ajusta el puerto
 
-const BASE_ORDERS = 'http://localhost:8081/api/v1/orders'; 
-// 🔴 Cambia el puerto / path según tu microservicio real
+export async function getOrdersByCustomerEmail(email) {
+  if (!email) throw new Error('Email requerido')
 
-async function handleJson(res) {
-  const text = await res.text()
-  let data = null
-
-  try {
-    data = text ? JSON.parse(text) : null
-  } catch {
-    data = text
-  }
+  const res = await fetch(
+    `${ORDERS_API_URL}/customer/${encodeURIComponent(email)}`
+  )
 
   if (!res.ok) {
-    const msg =
-      (data && (data.message || data.error)) ||
-      `Error HTTP ${res.status}`
-    throw new Error(msg)
+    throw new Error('Error al cargar las órdenes')
   }
 
-  return data
-}
-
-// Historial de compras por usuario
-export async function getUserOrders(userId) {
-  const res = await fetch(`${BASE_ORDERS}/user/${userId}`)
-  return handleJson(res)
+  return res.json()
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { getUserOrders } from '../api/orders' // si aún no lo tienes, puedes comentar TODA la parte de orders
+// ⬇️ CAMBIA esta importación
+import { getOrdersByCustomerEmail } from '../api/orders'
 
 export default function Account() {
   const [user, setUser] = useState(null)
@@ -12,9 +13,11 @@ export default function Account() {
       const u = JSON.parse(localStorage.getItem('bh_user'))
       setUser(u || null)
 
-      if (u && u.id) {
+      // ⛔ ANTES: if (u && u.id) {
+      // ✅ AHORA: usamos el email porque el backend busca por email
+      if (u && u.email) {
         setLoadingOrders(true)
-        getUserOrders(u.id)
+        getOrdersByCustomerEmail(u.email)
           .then(data => {
             setOrders(data || [])
             setErrorOrders(null)
@@ -91,7 +94,6 @@ export default function Account() {
                 <strong>Email:</strong> {user.email}
               </p>
 
-              {/* Stats simples (puedes conectarlas al backend en el futuro) */}
               <div className="mt-3">
                 <div className="small text-muted mb-1">Resumen rápido</div>
                 <div className="d-flex gap-2 flex-wrap">
@@ -117,7 +119,6 @@ export default function Account() {
 
           {/* Columna derecha: detalles + historial */}
           <div className="col-lg-12">
-            {/* Bloque: detalles de cuenta (expandible a futuro) */}
             <div className="account-card p-4 shadow-sm bg-white rounded-3 mb-4">
               <h5 className="mb-3">Detalles de la cuenta</h5>
               <p className="mb-2">
@@ -132,7 +133,7 @@ export default function Account() {
               </p>
             </div>
 
-            {/* Bloque: historial de compras */}
+            {/* Historial de compras */}
             <div className="account-card p-4 shadow-sm bg-white rounded-3">
               <h5 className="mb-3">Historial de compras</h5>
 

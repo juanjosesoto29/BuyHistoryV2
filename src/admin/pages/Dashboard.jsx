@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-const ORDERS_API = 'http://localhost:8081/api/v1/orders'
+const ORDERS_API = 'http://localhost:8087/api/v1/orders'
 const PRODUCTS_API = 'http://localhost:8080/api/v1/products'
 
 export default function Dashboard() {

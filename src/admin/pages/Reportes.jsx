@@ -12,7 +12,7 @@ import {
   Line,
 } from "recharts";
 
-const ORDERS_API = "http://localhost:8081/api/v1/orders";
+const ORDERS_API = "http://localhost:8087/api/v1/orders";
 const PRODUCTS_API = "http://localhost:8080/api/v1/products";
 
 export default function Reportes() {

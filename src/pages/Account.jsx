@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-// ⬇️ CAMBIA esta importación
+
 import { getOrdersByCustomerEmail } from '../api/orders'
 
 export default function Account() {
@@ -13,8 +13,6 @@ export default function Account() {
       const u = JSON.parse(localStorage.getItem('bh_user'))
       setUser(u || null)
 
-      // ⛔ ANTES: if (u && u.id) {
-      // ✅ AHORA: usamos el email porque el backend busca por email
       if (u && u.email) {
         setLoadingOrders(true)
         getOrdersByCustomerEmail(u.email)

@@ -1,4 +1,3 @@
-// src/api/users.js
 
 const BASE = 'http://localhost:8082/api/v1';
 

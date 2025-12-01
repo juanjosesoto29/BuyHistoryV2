@@ -8,6 +8,7 @@ import Home from './pages/Home.jsx'
 import Catalog from './pages/Catalog.jsx'
 import Cart from './pages/Cart.jsx'
 import Contact from './pages/Contact.jsx'
+import Nosotros from './pages/Nosotros.jsx'
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import Account from './pages/Account.jsx'
@@ -43,9 +44,11 @@ export default function App() {
           <Route path="/checkout/exito" element={<PagoExitoso />} />
           <Route path="/checkout/error" element={<PagoFallido/>} />
           <Route path="/contacto" element={<Contact />} />
+          <Route path="/nosotros" element={<Protected><Nosotros /></Protected>} />
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Register />} />
           <Route path="/cuenta" element={<Protected><Account /></Protected>} />
+          
         </Route>
 
         {/* Admin con layout propio */}
